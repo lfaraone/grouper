@@ -191,6 +191,8 @@ class GrouperView(View):
         context.update(kwargs)
         # XXX
         context["current_user"] = self.current_user
+        if "search_query" not in context:
+            context["search_query"] = ""
         return render(request, template_name, context)
 
     def send_email(self, recipients, subject, template, context):
