@@ -50,7 +50,7 @@ class Index(GrouperView):
     def get(self, request):
         # For now, redirect to viewing your own profile. TODO: maybe have a
         # Grouper home page where you can maybe do stuff?
-        user = self.get_current_user()
+        user = self.current_user
         return redirect("/users/{}".format(user.username))
 
 

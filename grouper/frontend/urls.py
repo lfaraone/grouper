@@ -66,6 +66,5 @@ urlpatterns += [
     url(r"help", views.Help.as_view()),
     #    url(r"debug/stats", views.Stats.as_view()),
 
-    #url(r".*", views.NotFound.as_view()),
-    #    url(r"$", views.Index.as_view()),
+    url(r"$", views.Index.as_view()),
 ]
