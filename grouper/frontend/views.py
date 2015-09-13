@@ -832,7 +832,7 @@ class GroupRequests(GrouperView):
 
 class AuditsComplete(GrouperView):
     def post(self, request, audit_id):
-        user = self.get_current_user()
+        user = self.current_user
         if not user.has_permission(PERMISSION_AUDITOR):
             raise PermissionDenied
 
@@ -891,7 +891,7 @@ class AuditsComplete(GrouperView):
 
 class AuditsCreate(GrouperView):
     def get(self, request):
-        user = self.get_current_user()
+        user = self.current_user
         if not user.has_permission(AUDIT_MANAGER):
             raise PermissionDenied
 
@@ -907,7 +907,7 @@ class AuditsCreate(GrouperView):
                 alerts=self.get_form_alerts(form.errors)
             )
 
-        user = self.get_current_user()
+        user = self.current_user
         if not user.has_permission(AUDIT_MANAGER):
             raise PermissionDenied
 
@@ -999,7 +999,7 @@ class AuditsCreate(GrouperView):
 
 class AuditsView(GrouperView):
     def get(self, request):
-        user = self.get_current_user()
+        user = self.current_user
         if not (user.has_permission(AUDIT_VIEWER) or user.has_permission(AUDIT_MANAGER)):
             raise PermissionDenied
 
