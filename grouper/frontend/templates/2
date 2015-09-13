@@ -74,7 +74,7 @@
 {% block content %}
 
 <div class="row">
-    <div class="col-md-5">
+    <div class="col-md-4">
         {{ group_panel(400, groups, True) }}
     </div>
     {% if open_audits and current_user.id == user.id %}

@@ -127,7 +127,7 @@
                         data-dismiss="modal">Close</button>
                 <form action="/groups/{{group.id}}/enable" method="post"
                       style="display: inline;">
-                    {{ xsrf_form() }}
+                    <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}"/>
                     <button type="submit" class="btn btn-primary">Enable</button>
                 </form>
             </div>
@@ -157,7 +157,7 @@
                         data-dismiss="modal">Close</button>
                 <form action="/groups/{{group.id}}/disable" method="post"
                       style="display: inline;">
-                    {{ xsrf_form() }}
+                    <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}"/>
                     <button type="submit" class="btn btn-primary">Disable</button>
                 </form>
             </div>
@@ -190,7 +190,7 @@
                       style="display: inline;">
                     <input type="hidden" name="member"></input>
                     <input type="hidden" name="member_type"></input>
-                    {{ xsrf_form() }}
+                    <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}"/>
                     <button type="submit" class="btn btn-primary">Remove</button>
                 </form>
             </div>
@@ -254,7 +254,7 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-default"
                         data-dismiss="modal">Close</button>
-                    {{ xsrf_form() }}
+                    <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}"/>
                     <button type="submit" class="btn btn-primary">Complete Audit</button>
             </div>
         </div>

@@ -114,7 +114,6 @@ def main(argv):
         "template_env": template_env,
     }
 
-    application = Application(HANDLERS, my_settings=my_settings, **tornado_settings)
 
     if settings.sentry_dsn:
         logging.info("sentry DSN set")

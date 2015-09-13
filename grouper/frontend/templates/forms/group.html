@@ -11,6 +11,11 @@
 {%- endmacro %}
 
 
-{{ form_field(form.public_key, 3, 8, class_="form-control", rows=5) }}
+{% if form.creatorrole %}
+    {{ form_field(form.creatorrole, 3, 6, class_="form-control") }}
+{% endif %}
+{{ form_field(form.groupname, 3, 8, class_="form-control") }}
+{{ form_field(form.description, 3, 8, class_="form-control", rows=5) }}
+{{ form_field(form.canjoin, 3, 4, class_="form-control") }}
 
-{{ xsrf_form() }}
+<input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}"/>

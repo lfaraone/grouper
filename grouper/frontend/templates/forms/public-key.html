@@ -11,7 +11,6 @@
 {%- endmacro %}
 
 
-{{ form_field(form.name, 3, 8, class_="form-control") }}
-{{ form_field(form.description, 3, 8, class_="form-control", rows=5) }}
+{{ form_field(form.public_key, 3, 8, class_="form-control", rows=5) }}
 
-{{ xsrf_form() }}
+<input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}"/>

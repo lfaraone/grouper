@@ -18,4 +18,4 @@
     </div>
 </div>
 {{ form.redirect_aggregate() }}
-{{ xsrf_form() }}
+<input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}"/>

@@ -83,7 +83,7 @@
                         data-dismiss="modal">Close</button>
                 <form action="/permissions/{{permission.name}}/enable-auditing" method="post"
                       style="display: inline;">
-                    {{ xsrf_form() }}
+                    <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}"/>
                     <button type="submit" class="btn btn-primary">Enable</button>
                 </form>
             </div>
@@ -110,7 +110,7 @@
                         data-dismiss="modal">Close</button>
                 <form action="/permissions/{{permission.name}}/disable-auditing" method="post"
                       style="display: inline;">
-                    {{ xsrf_form() }}
+                    <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}"/>
                     <button type="submit" class="btn btn-primary">Disable</button>
                 </form>
             </div>

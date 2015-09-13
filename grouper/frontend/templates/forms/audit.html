@@ -8,4 +8,4 @@
     </div>
 </div>
 
-{{ xsrf_form() }}
+<input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}"/>
