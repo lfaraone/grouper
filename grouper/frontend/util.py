@@ -166,7 +166,7 @@ class GrouperView(View):
         context.update(self.get_template_namespace())
         context.update(kwargs)
         # XXX
-        context["current_user"] = self.current_user
+        context["current_user"] = request.user
         if "search_query" not in context:
             context["search_query"] = ""
         return render(request, template_name, context)

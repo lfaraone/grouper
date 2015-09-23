@@ -109,7 +109,7 @@ class UserView(GrouperView):
             return HttpResponse("404") # XXX(lfaraone)
 
         can_control = False
-        if (user.name == request.user.name) or request.user.user_admin:
+        if (user.name == request.user.username) or request.user.user_admin:
             can_control = True
 
         if user.id == request.user.id:
@@ -603,7 +603,7 @@ class GroupEditMember(GrouperView):
         if not group:
             return HttpResponse("404") # XXX(lfaraone)
 
-        if request.user.name == name2:
+        if request.user.username == name2:
             raise PermissionDenied
 
         members = group.my_members()
@@ -643,7 +643,7 @@ class GroupEditMember(GrouperView):
         if not group:
             return HttpResponse("404") # XXX(lfaraone)
 
-        if request.user.name == name2:
+        if request.user.username == name2:
             raise PermissionDenied
 
         members = group.my_members()
@@ -1324,7 +1324,7 @@ class GroupJoin(GrouperView):
 
             self.send_email(mail_to, 'Request to join: {}'.format(group.name), 'pending_request', {
                 "requester": member.name,
-                "requested_by": request.user.name,
+                "requested_by": request.user.username,
                 "requested": group.name,
                 "reason": form.data["reason"],
                 "expiration": expiration,
@@ -1362,9 +1362,9 @@ class GroupJoin(GrouperView):
 
         members = group.my_members()
 
-        if ("User", request.user.name) not in members:
+        if ("User", request.user.username) not in members:
             choices.append(
-                ("User: {}".format(request.user.name), ) * 2
+                ("User: {}".format(request.user.username), ) * 2
             )
 
         for _group in request.user.my_groups():
@@ -1408,7 +1408,7 @@ class GroupLeave(GrouperView):
         group.revoke_member(request.user, request.user, "User self-revoked.")
 
         AuditLog.log(self.session, request.user.id, 'leave_group',
-                     '{} left the group.'.format(request.user.name),
+                     '{} left the group.'.format(request.user.username),
                      on_group_id=group.id)
 
         return redirect("/groups/{}?refresh=yes".format(group.name))
@@ -1509,7 +1509,7 @@ class PublicKeyAdd(GrouperView):
         if not user:
             return HttpResponse("404") # XXX(lfaraone)
 
-        if (user.name != request.user.name) and not request.user.user_admin:
+        if (user.name != request.user.username) and not request.user.user_admin:
             raise PermissionDenied
 
         return self.render(request, "public-key-add.html", form=PublicKeyForm(), user=user)
@@ -1519,7 +1519,7 @@ class PublicKeyAdd(GrouperView):
         if not user:
             return HttpResponse("404") # XXX(lfaraone)
 
-        if (user.name != request.user.name) and not request.user.user_admin:
+        if (user.name != request.user.username) and not request.user.user_admin:
             raise PermissionDenied
 
         form = PublicKeyForm(request.POST)
@@ -1557,7 +1557,7 @@ class PublicKeyAdd(GrouperView):
                      on_user_id=user.id)
 
         self.send_email([user.name], 'Public SSH key added', 'ssh_keys_changed', {
-            "actioner": request.user.name,
+            "actioner": request.user.username,
             "changed_user": user.name,
             "action": "added",
         })
@@ -1571,7 +1571,7 @@ class PublicKeyDelete(GrouperView):
         if not user:
             return HttpResponse("404") # XXX(lfaraone)
 
-        if (user.name != request.user.name) and not request.user.user_admin:
+        if (user.name != request.user.username) and not request.user.user_admin:
             raise PermissionDenied
 
         key = self.session.query(PublicKey).filter_by(id=key_id, user_id=user.id).scalar()
@@ -1585,7 +1585,7 @@ class PublicKeyDelete(GrouperView):
         if not user:
             return HttpResponse("404") # XXX(lfaraone)
 
-        if (user.name != request.user.name) and not request.user.user_admin:
+        if (user.name != request.user.username) and not request.user.user_admin:
             raise PermissionDenied
 
         key = self.session.query(PublicKey).filter_by(id=key_id, user_id=user.id).scalar()
@@ -1600,7 +1600,7 @@ class PublicKeyDelete(GrouperView):
                      on_user_id=user.id)
 
         self.send_email([user.name], 'Public SSH key removed', 'ssh_keys_changed', {
-            "actioner": request.user.name,
+            "actioner": request.user.username,
             "changed_user": user.name,
             "action": "removed",
         })
