@@ -50,7 +50,7 @@ class Index(GrouperView):
     def get(self, request):
         # For now, redirect to viewing your own profile. TODO: maybe have a
         # Grouper home page where you can maybe do stuff?
-        user = self.current_user
+        user = request.user
         return redirect("/users/{}".format(user.username))
 
 
@@ -109,11 +109,11 @@ class UserView(GrouperView):
             return HttpResponse("404") # XXX(lfaraone)
 
         can_control = False
-        if (user.name == self.current_user.name) or self.current_user.user_admin:
+        if (user.name == request.user.name) or request.user.user_admin:
             can_control = True
 
-        if user.id == self.current_user.id:
-            num_pending_requests = self.current_user.my_requests_aggregate().count()
+        if user.id == request.user.id:
+            num_pending_requests = request.user.my_requests_aggregate().count()
         else:
             num_pending_requests = None
 
@@ -137,7 +137,7 @@ class UserView(GrouperView):
 
 class PermissionsCreate(GrouperView):
     def get(self, request):
-        can_create = self.current_user.my_creatable_permissions()
+        can_create = request.user.my_creatable_permissions()
         if not can_create:
             raise PermissionDenied
 
@@ -148,7 +148,7 @@ class PermissionsCreate(GrouperView):
         )
 
     def post(self, request):
-        can_create = self.current_user.my_creatable_permissions()
+        can_create = request.user.my_creatable_permissions()
         if not can_create:
             raise PermissionDenied
 
@@ -197,7 +197,7 @@ class PermissionsCreate(GrouperView):
 
         self.session.commit()
 
-        AuditLog.log(self.session, self.current_user.id, 'create_permission',
+        AuditLog.log(self.session, request.user.id, 'create_permission',
                      'Created permission.', on_permission_id=permission.id)
 
         # No explicit refresh because handler queries SQL.
@@ -206,7 +206,7 @@ class PermissionsCreate(GrouperView):
 
 class PermissionDisableAuditing(GrouperView):
     def post(self, request, user_id=None, name=None):
-        if not self.current_user.permission_admin:
+        if not request.user.permission_admin:
             raise PermissionDenied
 
         permission = Permission.get(self.session, name)
@@ -217,7 +217,7 @@ class PermissionDisableAuditing(GrouperView):
         permission.disable_auditing()
         self.session.commit()
 
-        AuditLog.log(self.session, self.current_user.id, 'disable_auditing',
+        AuditLog.log(self.session, request.user.id, 'disable_auditing',
                      'Disabled auditing.', on_permission_id=permission.id)
 
         # No explicit refresh because handler queries SQL.
@@ -226,7 +226,7 @@ class PermissionDisableAuditing(GrouperView):
 
 class PermissionEnableAuditing(GrouperView):
     def post(self, request, name=None):
-        if not self.current_user.permission_admin:
+        if not request.user.permission_admin:
             raise PermissionDenied
 
         permission = Permission.get(self.session, name)
@@ -237,7 +237,7 @@ class PermissionEnableAuditing(GrouperView):
         permission.enable_auditing()
         self.session.commit()
 
-        AuditLog.log(self.session, self.current_user.id, 'enable_auditing',
+        AuditLog.log(self.session, request.user.id, 'enable_auditing',
                      'Enabled auditing.', on_permission_id=permission.id)
 
         # No explicit refresh because handler queries SQL.
@@ -246,7 +246,7 @@ class PermissionEnableAuditing(GrouperView):
 
 class PermissionsGrant(GrouperView):
     def get(self, request, name=None):
-        grantable = self.current_user.my_grantable_permissions()
+        grantable = request.user.my_grantable_permissions()
         if not grantable:
             raise PermissionDenied
 
@@ -266,7 +266,7 @@ class PermissionsGrant(GrouperView):
         )
 
     def post(self, request, name=None):
-        grantable = self.current_user.my_grantable_permissions()
+        grantable = request.user.my_grantable_permissions()
         if not grantable:
             raise PermissionDenied
 
@@ -335,7 +335,7 @@ class PermissionsGrant(GrouperView):
 
         self.session.commit()
 
-        AuditLog.log(self.session, self.current_user.id, 'grant_permission',
+        AuditLog.log(self.session, request.user.id, 'grant_permission',
                      'Granted permission with argument: {}'.format(form.data["argument"]),
                      on_permission_id=permission.id, on_group_id=group.id)
 
@@ -344,7 +344,7 @@ class PermissionsGrant(GrouperView):
 
 class PermissionsRevoke(GrouperView):
     def get(self, request, name=None, mapping_id=None):
-        grantable = self.current_user.my_grantable_permissions()
+        grantable = request.user.my_grantable_permissions()
         if not grantable:
             raise PermissionDenied
 
@@ -364,7 +364,7 @@ class PermissionsRevoke(GrouperView):
         return self.render(request, "permission-revoke.html", mapping=mapping)
 
     def post(self, request, name=None, mapping_id=None):
-        grantable = self.current_user.my_grantable_permissions()
+        grantable = request.user.my_grantable_permissions()
         if not grantable:
             raise PermissionDenied
 
@@ -386,7 +386,7 @@ class PermissionsRevoke(GrouperView):
         mapping.delete(self.session)
         self.session.commit()
 
-        AuditLog.log(self.session, self.current_user.id, 'revoke_permission',
+        AuditLog.log(self.session, request.user.id, 'revoke_permission',
                      'Revoked permission with argument: {}'.format(mapping.argument),
                      on_group_id=group.id, on_permission_id=permission.id)
 
@@ -409,7 +409,7 @@ class PermissionsView(GrouperView):
         total = len(permissions)
         permissions = permissions[offset:offset + limit]
 
-        can_create = self.current_user.my_creatable_permissions()
+        can_create = request.user.my_creatable_permissions()
 
         return self.render(request, 
             "permissions.html", permissions=permissions, offset=offset, limit=limit, total=total,
@@ -424,7 +424,7 @@ class PermissionView(GrouperView):
         if not permission:
             return HttpResponse("404") # XXX(lfaraone)
 
-        can_delete = self.current_user.permission_admin
+        can_delete = request.user.permission_admin
         mapped_groups = permission.get_mapped_groups()
         log_entries = permission.my_log_entries()
 
@@ -500,7 +500,7 @@ class UsersPublicKey(GrouperView):
 
 class UserEnable(GrouperView):
     def post(self, request, user_id=None, name=None):
-        if not self.current_user.user_admin:
+        if not request.user.user_admin:
             raise PermissionDenied
 
         user = User.get(self.session, user_id, name)
@@ -510,7 +510,7 @@ class UserEnable(GrouperView):
         user.enable()
         self.session.commit()
 
-        AuditLog.log(self.session, self.current_user.id, 'enable_user',
+        AuditLog.log(self.session, request.user.id, 'enable_user',
                      'Enabled user.', on_user_id=user.id)
 
         return redirect(("/users/{}?refresh=yes".format(user.name)))
@@ -519,17 +519,17 @@ class UserEnable(GrouperView):
 class UserDisable(GrouperView):
     def post(self, request, user_id=None, name=None):
 
-        if not self.current_user.user_admin:
+        if not request.user.user_admin:
             raise PermissionDenied
 
         user = User.get(self.session, user_id, name)
         if not user:
             return HttpResponse("404") # XXX(lfaraone)
 
-        user.disable(self.current_user)
+        user.disable(request.user)
         self.session.commit()
 
-        AuditLog.log(self.session, self.current_user.id, 'disable_user',
+        AuditLog.log(self.session, request.user.id, 'disable_user',
                      'Disabled user.', on_user_id=user.id)
 
         return redirect("/users/{}?refresh=yes".format(user.name))
@@ -543,7 +543,7 @@ class UserRequests(GrouperView):
         if limit > 9000:
             limit = 9000
 
-        requests = self.current_user.my_requests_aggregate().order_by(Request.requested_at.desc())
+        requests = request.user.my_requests_aggregate().order_by(Request.requested_at.desc())
 
         total = requests.count()
         requests = requests.offset(offset).limit(limit)
@@ -559,7 +559,7 @@ class GroupView(GrouperView):
         if not group:
             return HttpResponse("404") # XXX(lfaraone)
 
-        grantable = self.current_user.my_grantable_permissions()
+        grantable = request.user.my_grantable_permissions()
 
         try:
             group_md = self.graph.get_group_details(group.name)
@@ -585,7 +585,7 @@ class GroupView(GrouperView):
                     break
 
         alerts = []
-        self_pending = group.my_requests("pending", user=self.current_user).count()
+        self_pending = group.my_requests("pending", user=request.user).count()
         if self_pending:
             alerts.append(Alert('info', 'You have a pending request to join this group.', None))
 
@@ -603,11 +603,11 @@ class GroupEditMember(GrouperView):
         if not group:
             return HttpResponse("404") # XXX(lfaraone)
 
-        if self.current_user.name == name2:
+        if request.user.name == name2:
             raise PermissionDenied
 
         members = group.my_members()
-        my_role = self.current_user.my_role(members)
+        my_role = request.user.my_role(members)
         if my_role not in ("manager", "owner", "np-owner"):
             raise PermissionDenied
 
@@ -643,11 +643,11 @@ class GroupEditMember(GrouperView):
         if not group:
             return HttpResponse("404") # XXX(lfaraone)
 
-        if self.current_user.name == name2:
+        if request.user.name == name2:
             raise PermissionDenied
 
         members = group.my_members()
-        my_role = self.current_user.my_role(members)
+        my_role = request.user.my_role(members)
         if my_role not in ("manager", "owner", "np-owner"):
             raise PermissionDenied
 
@@ -702,7 +702,7 @@ class GroupEditMember(GrouperView):
         if form.data["expiration"]:
             expiration = datetime.strptime(form.data["expiration"], "%m/%d/%Y")
 
-        group.edit_member(self.current_user, user_or_group, form.data["reason"],
+        group.edit_member(request.user, user_or_group, form.data["reason"],
                           role=form.data["role"], expiration=expiration)
 
         return redirect("/groups/{}?refresh=yes".format(group.name))
@@ -715,7 +715,7 @@ class GroupRequestUpdate(GrouperView):
             return HttpResponse("404") # XXX(lfaraone)
 
         members = group.my_members()
-        my_role = self.current_user.my_role(members)
+        my_role = request.user.my_role(members)
         if my_role not in ("manager", "owner", "np-owner"):
             raise PermissionDenied
 
@@ -740,7 +740,7 @@ class GroupRequestUpdate(GrouperView):
             return HttpResponse("404") # XXX(lfaraone)
 
         members = group.my_members()
-        my_role = self.current_user.my_role(members)
+        my_role = request.user.my_role(members)
         if my_role not in ("manager", "owner", "np-owner"):
             raise PermissionDenied
 
@@ -780,13 +780,13 @@ class GroupRequestUpdate(GrouperView):
                 )
 
         request.update_status(
-            self.current_user,
+            request.user,
             form.data["status"],
             form.data["reason"]
         )
         self.session.commit()
 
-        AuditLog.log(self.session, self.current_user.id, 'update_request',
+        AuditLog.log(self.session, request.user.id, 'update_request',
                      'Updated request to status: {}'.format(form.data["status"]),
                      on_group_id=group.id, on_user_id=request.requester.id)
 
@@ -832,7 +832,7 @@ class GroupRequests(GrouperView):
 
 class AuditsComplete(GrouperView):
     def post(self, request, audit_id):
-        user = self.current_user
+        user = request.user
         if not user.has_permission(PERMISSION_AUDITOR):
             raise PermissionDenied
 
@@ -871,9 +871,9 @@ class AuditsComplete(GrouperView):
         # be removed from the group now.
         for member in audit.my_members():
             if member.status == "remove":
-                audit.group.revoke_member(self.current_user, member.member,
+                audit.group.revoke_member(request.user, member.member,
                                           "Revoked as part of audit.")
-                AuditLog.log(self.session, self.current_user.id, 'remove_member',
+                AuditLog.log(self.session, request.user.id, 'remove_member',
                              'Removed membership in audit: {}'.format(member.member.name),
                              on_group_id=audit.group.id)
 
@@ -883,7 +883,7 @@ class AuditsComplete(GrouperView):
         # Now cancel pending emails
         self.cancel_async_emails('audit-{}'.format(audit.group.id))
 
-        AuditLog.log(self.session, self.current_user.id, 'complete_audit',
+        AuditLog.log(self.session, request.user.id, 'complete_audit',
                      'Completed group audit.', on_group_id=audit.group.id)
 
         return redirect('/groups/{}'.format(audit.group.name))
@@ -891,7 +891,7 @@ class AuditsComplete(GrouperView):
 
 class AuditsCreate(GrouperView):
     def get(self, request):
-        user = self.current_user
+        user = request.user
         if not user.has_permission(AUDIT_MANAGER):
             raise PermissionDenied
 
@@ -907,7 +907,7 @@ class AuditsCreate(GrouperView):
                 alerts=self.get_form_alerts(form.errors)
             )
 
-        user = self.current_user
+        user = request.user
         if not user.has_permission(AUDIT_MANAGER):
             raise PermissionDenied
 
@@ -952,7 +952,7 @@ class AuditsCreate(GrouperView):
 
         self.session.commit()
 
-        AuditLog.log(self.session, self.current_user.id, 'start_audit',
+        AuditLog.log(self.session, request.user.id, 'start_audit',
                      'Started global audit.')
 
         # Calculate schedule of emails, basically we send emails at various periods in advance
@@ -999,7 +999,7 @@ class AuditsCreate(GrouperView):
 
 class AuditsView(GrouperView):
     def get(self, request):
-        user = self.current_user
+        user = request.user
         if not (user.has_permission(AUDIT_VIEWER) or user.has_permission(AUDIT_MANAGER)):
             raise PermissionDenied
 
@@ -1070,7 +1070,7 @@ class GroupsView(GrouperView):
                 alerts=self.get_form_alerts(form.errors)
             )
 
-        user = self.current_user
+        user = request.user
 
         group = Group(
             groupname=form.data["groupname"],
@@ -1093,7 +1093,7 @@ class GroupsView(GrouperView):
         group.add_member(user, user, "Group Creator", "actioned", None, form.data["creatorrole"])
         self.session.commit()
 
-        AuditLog.log(self.session, self.current_user.id, 'create_group',
+        AuditLog.log(self.session, request.user.id, 'create_group',
                      'Created new group.', on_group_id=group.id)
 
         return redirect("/groups/{}?refresh=yes".format(group.name))
@@ -1138,11 +1138,11 @@ class GroupAdd(GrouperView):
         if not group:
             return HttpResponse("404") # XXX(lfaraone)
 
-        if not self.current_user.can_manage(group):
+        if not request.user.can_manage(group):
             raise PermissionDenied
 
         members = group.my_members()
-        my_role = self.current_user.my_role(members)
+        my_role = request.user.my_role(members)
         return self.render(request, 
             "group-add.html", form=self.get_form(request, role=my_role), group=group
         )
@@ -1152,11 +1152,11 @@ class GroupAdd(GrouperView):
         if not group:
             return HttpResponse("404") # XXX(lfaraone)
 
-        if not self.current_user.can_manage(group):
+        if not request.user.can_manage(group):
             raise PermissionDenied
 
         members = group.my_members()
-        my_role = self.current_user.my_role(members)
+        my_role = request.user.my_role(members)
         form = self.get_form(request, role=my_role)
         if not form.validate():
             return self.render(request, 
@@ -1193,7 +1193,7 @@ class GroupAdd(GrouperView):
             expiration = datetime.strptime(form.data["expiration"], "%m/%d/%Y")
 
         group.add_member(
-            requester=self.current_user,
+            requester=request.user,
             user_or_group=member,
             reason=form.data["reason"],
             status='actioned',
@@ -1202,7 +1202,7 @@ class GroupAdd(GrouperView):
         )
         self.session.commit()
 
-        AuditLog.log(self.session, self.current_user.id, 'join_group',
+        AuditLog.log(self.session, request.user.id, 'join_group',
                      '{} added to group with role: {}'.format(
                          member.name, form.data["role"]),
                      on_group_id=group.id)
@@ -1216,7 +1216,7 @@ class GroupRemove(GrouperView):
         if not group:
             return HttpResponse("404") # XXX(lfaraone)
 
-        if not self.current_user.can_manage(group):
+        if not request.user.can_manage(group):
             raise PermissionDenied
 
         form = GroupRemoveForm(request.POST)
@@ -1231,14 +1231,14 @@ class GroupRemove(GrouperView):
 
         removed_member = get_user_or_group(self.session, member_name, user_or_group=member_type)
 
-        if self.current_user == removed_member:
+        if request.user == removed_member:
             return self.send_error(
                 status_code=400,
                 reason="Can't remove yourself. Leave group instead."
             )
 
-        group.revoke_member(self.current_user, removed_member, "Removed by owner/np-owner/manager")
-        AuditLog.log(self.session, self.current_user.id, 'remove_from_group',
+        group.revoke_member(request.user, removed_member, "Removed by owner/np-owner/manager")
+        AuditLog.log(self.session, request.user.id, 'remove_from_group',
                      '{} was removed from the group.'.format(removed_member.name),
                      on_group_id=group.id, on_user_id=removed_member.id)
         return redirect("/groups/{}?refresh=yes".format(group.name))
@@ -1301,7 +1301,7 @@ class GroupJoin(GrouperView):
             expiration = datetime.strptime(form.data["expiration"], "%m/%d/%Y")
 
         group.add_member(
-            requester=self.current_user,
+            requester=request.user,
             user_or_group=member,
             reason=form.data["reason"],
             status=GROUP_JOIN_CHOICES[group.canjoin],
@@ -1311,7 +1311,7 @@ class GroupJoin(GrouperView):
         self.session.commit()
 
         if group.canjoin == 'canask':
-            AuditLog.log(self.session, self.current_user.id, 'join_group',
+            AuditLog.log(self.session, request.user.id, 'join_group',
                          '{} requested to join with role: {}'.format(
                              member.name, form.data["role"]),
                          on_group_id=group.id)
@@ -1324,7 +1324,7 @@ class GroupJoin(GrouperView):
 
             self.send_email(mail_to, 'Request to join: {}'.format(group.name), 'pending_request', {
                 "requester": member.name,
-                "requested_by": self.current_user.name,
+                "requested_by": request.user.name,
                 "requested": group.name,
                 "reason": form.data["reason"],
                 "expiration": expiration,
@@ -1332,7 +1332,7 @@ class GroupJoin(GrouperView):
             })
 
         elif group.canjoin == 'canjoin':
-            AuditLog.log(self.session, self.current_user.id, 'join_group',
+            AuditLog.log(self.session, request.user.id, 'join_group',
                          '{} auto-approved to join with role: {}'.format(
                              member.name, form.data["role"]),
                          on_group_id=group.id)
@@ -1362,12 +1362,12 @@ class GroupJoin(GrouperView):
 
         members = group.my_members()
 
-        if ("User", self.current_user.name) not in members:
+        if ("User", request.user.name) not in members:
             choices.append(
-                ("User: {}".format(self.current_user.name), ) * 2
+                ("User: {}".format(request.user.name), ) * 2
             )
 
-        for _group in self.current_user.my_groups():
+        for _group in request.user.my_groups():
             if group.name == _group.name:  # Don't add self.
                 continue
             if _group.role < 1:  # manager, owner, and np-owner only.
@@ -1389,7 +1389,7 @@ class GroupLeave(GrouperView):
             return HttpResponse("404") # XXX(lfaraone)
 
         members = group.my_members()
-        if not self.current_user.my_role(members):
+        if not request.user.my_role(members):
             raise PermissionDenied
 
         return self.render(request, 
@@ -1402,13 +1402,13 @@ class GroupLeave(GrouperView):
             return HttpResponse("404") # XXX(lfaraone)
 
         members = group.my_members()
-        if not self.current_user.my_role(members):
+        if not request.user.my_role(members):
             raise PermissionDenied
 
-        group.revoke_member(self.current_user, self.current_user, "User self-revoked.")
+        group.revoke_member(request.user, request.user, "User self-revoked.")
 
-        AuditLog.log(self.session, self.current_user.id, 'leave_group',
-                     '{} left the group.'.format(self.current_user.name),
+        AuditLog.log(self.session, request.user.id, 'leave_group',
+                     '{} left the group.'.format(request.user.name),
                      on_group_id=group.id)
 
         return redirect("/groups/{}?refresh=yes".format(group.name))
@@ -1420,7 +1420,7 @@ class GroupEdit(GrouperView):
         if not group:
             return HttpResponse("404") # XXX(lfaraone)
 
-        if not self.current_user.can_manage(group):
+        if not request.user.can_manage(group):
             raise PermissionDenied
 
         form = GroupEditForm(obj=group)
@@ -1432,7 +1432,7 @@ class GroupEdit(GrouperView):
         if not group:
             return HttpResponse("404") # XXX(lfaraone)
 
-        if not self.current_user.can_manage(group):
+        if not request.user.can_manage(group):
             raise PermissionDenied
 
         form = GroupEditForm(request.POST, obj=group)
@@ -1459,7 +1459,7 @@ class GroupEdit(GrouperView):
                 alerts=self.get_form_alerts(form.errors)
             )
 
-        AuditLog.log(self.session, self.current_user.id, 'edit_group',
+        AuditLog.log(self.session, request.user.id, 'edit_group',
                      'Edited group.', on_group_id=group.id)
 
         return redirect("/groups/{}".format(group.name))
@@ -1472,13 +1472,13 @@ class GroupEnable(GrouperView):
             return HttpResponse("404") # XXX(lfaraone)
 
         members = group.my_members()
-        if not self.current_user.my_role(members) in ("owner", "np-owner"):
+        if not request.user.my_role(members) in ("owner", "np-owner"):
             raise PermissionDenied
 
         group.enable()
         self.session.commit()
 
-        AuditLog.log(self.session, self.current_user.id, 'enable_group',
+        AuditLog.log(self.session, request.user.id, 'enable_group',
                      'Enabled group.', on_group_id=group.id)
 
         return redirect("/groups/{}?refresh=yes".format(group.name))
@@ -1491,13 +1491,13 @@ class GroupDisable(GrouperView):
             return HttpResponse("404") # XXX(lfaraone)
 
         members = group.my_members()
-        if not self.current_user.my_role(members) in ("owner", "np-owner"):
+        if not request.user.my_role(members) in ("owner", "np-owner"):
             raise PermissionDenied
 
         group.disable()
         self.session.commit()
 
-        AuditLog.log(self.session, self.current_user.id, 'disable_group',
+        AuditLog.log(self.session, request.user.id, 'disable_group',
                      'Disabled group.', on_group_id=group.id)
 
         return redirect("/groups/{}?refresh=yes".format(group.name))
@@ -1509,7 +1509,7 @@ class PublicKeyAdd(GrouperView):
         if not user:
             return HttpResponse("404") # XXX(lfaraone)
 
-        if (user.name != self.current_user.name) and not self.current_user.user_admin:
+        if (user.name != request.user.name) and not request.user.user_admin:
             raise PermissionDenied
 
         return self.render(request, "public-key-add.html", form=PublicKeyForm(), user=user)
@@ -1519,7 +1519,7 @@ class PublicKeyAdd(GrouperView):
         if not user:
             return HttpResponse("404") # XXX(lfaraone)
 
-        if (user.name != self.current_user.name) and not self.current_user.user_admin:
+        if (user.name != request.user.name) and not request.user.user_admin:
             raise PermissionDenied
 
         form = PublicKeyForm(request.POST)
@@ -1552,12 +1552,12 @@ class PublicKeyAdd(GrouperView):
 
         self.session.commit()
 
-        AuditLog.log(self.session, self.current_user.id, 'add_public_key',
+        AuditLog.log(self.session, request.user.id, 'add_public_key',
                      'Added public key: {}'.format(pubkey.fingerprint),
                      on_user_id=user.id)
 
         self.send_email([user.name], 'Public SSH key added', 'ssh_keys_changed', {
-            "actioner": self.current_user.name,
+            "actioner": request.user.name,
             "changed_user": user.name,
             "action": "added",
         })
@@ -1571,7 +1571,7 @@ class PublicKeyDelete(GrouperView):
         if not user:
             return HttpResponse("404") # XXX(lfaraone)
 
-        if (user.name != self.current_user.name) and not self.current_user.user_admin:
+        if (user.name != request.user.name) and not request.user.user_admin:
             raise PermissionDenied
 
         key = self.session.query(PublicKey).filter_by(id=key_id, user_id=user.id).scalar()
@@ -1585,7 +1585,7 @@ class PublicKeyDelete(GrouperView):
         if not user:
             return HttpResponse("404") # XXX(lfaraone)
 
-        if (user.name != self.current_user.name) and not self.current_user.user_admin:
+        if (user.name != request.user.name) and not request.user.user_admin:
             raise PermissionDenied
 
         key = self.session.query(PublicKey).filter_by(id=key_id, user_id=user.id).scalar()
@@ -1595,12 +1595,12 @@ class PublicKeyDelete(GrouperView):
         key.delete(self.session)
         self.session.commit()
 
-        AuditLog.log(self.session, self.current_user.id, 'delete_public_key',
+        AuditLog.log(self.session, request.user.id, 'delete_public_key',
                      'Deleted public key: {}'.format(key.fingerprint),
                      on_user_id=user.id)
 
         self.send_email([user.name], 'Public SSH key removed', 'ssh_keys_changed', {
-            "actioner": self.current_user.name,
+            "actioner": request.user.name,
             "changed_user": user.name,
             "action": "removed",
         })

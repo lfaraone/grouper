@@ -71,6 +71,9 @@ class Application(object):
         }
 
 
+def normalize_auth_header(header):
+    return 'HTTP_' + header.upper().replace('-', '_')
+
 class GrouperView(View):
     def __init__(self, *args, **kwargs):
         super(GrouperView, self).__init__(*args, **kwargs)
@@ -111,33 +114,6 @@ class GrouperView(View):
         return True
         if request.GET.get("refresh", "no").lower() == "yes":
             self.graph.update_from_db(self.session)
-
-    @property
-    def current_user(self):
-        username = "admin@example.com" # XXX self.request.headers.get(settings.user_auth_header)
-        if not username:
-            return
-
-        # Users must be fully qualified
-        if not re.match(r"[^@]+@[^@]+\.[^@]+", username):
-            raise InvalidUser()
-
-        try:
-            user, created = User.get_or_create(self.session, username=username)
-            if created:
-                logging.info("Created new user %s", username)
-                self.session.commit()
-                # Because the graph doesn't initialize until the updates table
-                # is populated, we need to refresh the graph here in case this
-                # is the first update.
-                self.graph.update_from_db(self.session)
-        except sqlalchemy.exc.OperationalError:
-            # Failed to connect to database or create user, try to reconfigure the db. This invokes
-            # the fetcher to try to see if our URL string has changed.
-            Session.configure(bind=get_db_engine(get_database_url(settings)))
-            raise DatabaseFailure()
-
-        return user
 
     def prepare(self):
         if not self.current_user or not self.current_user.enabled:

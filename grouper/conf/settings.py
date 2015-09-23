@@ -28,6 +28,11 @@ DEBUG = True
 ALLOWED_HOSTS = []
 
 
+AUTHENTICATION_BACKENDS = (
+    'grouper.middleware.auth.EmailHeaderBackend',
+    'django.contrib.auth.backends.ModelBackend',
+)
+
 # Application definition
 
 INSTALLED_APPS = (
@@ -45,6 +50,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'grouper.middleware.auth.EmailHeaderMiddleware',
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -72,6 +78,9 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'conf.wsgi.application'
 
+# Header to check for Authenticated Email. This is intended for use behind an
+# authenticating reverse proxy.
+USER_AUTH_HEADER = 'X-Grouper-User'
 
 # Database
 # https://docs.djangoproject.com/en/1.8/ref/settings/#databases

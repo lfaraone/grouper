@@ -41,7 +41,8 @@ cmds = [
         settings,
         options.user,
     ),
-    "bin/grouper-fe --config={}".format(settings),
+    # XXX don't hardcode this port
+    "grouper/manage.py runserver 8989",
     "bin/grouper-api --config={}".format(settings),
 ]
 
