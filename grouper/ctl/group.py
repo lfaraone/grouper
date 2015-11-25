@@ -6,7 +6,7 @@ from grouper.models import AuditLog, Group, User
 
 @ensure_valid_username
 @ensure_valid_groupname
-def group_command(args):
+def mod_members(args):
     session = make_session()
     group = session.query(Group).filter_by(groupname=args.groupname).scalar()
     if not group:
@@ -41,15 +41,17 @@ def group_command(args):
 def add_parser(subparsers):
     group_parser = subparsers.add_parser(
         "group", help="Edit groups and membership")
-    group_parser.set_defaults(func=group_command)
+    #group_parser.set_defaults(func=group_command)
     group_subparser = group_parser.add_subparsers(dest="subcommand")
 
     group_join_parser = group_subparser.add_parser(
-        "add_member", help="Join a user to a group")
+        "add_member", help="Join one or more users to a group")
+    group_join_parser.set_defaults(func=mod_members)
     group_join_parser.add_argument("groupname")
     group_join_parser.add_argument("username", nargs="+")
 
     group_remove_parser = group_subparser.add_parser(
-        "remove_member", help="Remove a user from a group")
+        "remove_member", help="Remove one or more users from a group")
+    group_remove_parser.set_defaults(func=mod_members)
     group_remove_parser.add_argument("groupname")
     group_remove_parser.add_argument("username", nargs="+")
