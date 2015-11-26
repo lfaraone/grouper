@@ -243,3 +243,7 @@ def ensure_audit_security(perm_arg):
         return wraps(f)(_decorator)
 
     return _wrapper
+
+
+def normalize_auth_header(header):
+    return 'HTTP_' + header.upper().replace('-', '_')
