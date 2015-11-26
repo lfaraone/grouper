@@ -50,9 +50,9 @@ class Index(GrouperView):
 
 class Search(GrouperView):
     def get(self, request):
-        query = self.get_argument("query", "")
-        offset = int(self.get_argument("offset", 0))
-        limit = int(self.get_argument("limit", 100))
+        query = request.GET.get("query", default="")
+        offset = int(request.GET.get("offset", default=0))
+        limit = int(request.GET.get("limit", default=100))
         if limit > 9000:
             limit = 9000
 
@@ -385,9 +385,9 @@ class PermissionsView(GrouperView):
     a permission is public.
     '''
     def get(self, request, audited_only=False):
-        offset = int(self.get_argument("offset", 0))
-        limit = int(self.get_argument("limit", 100))
-        audited_only = bool(int(self.get_argument("audited", 0)))
+        offset = int(request.GET.get("offset", default=0))
+        limit = int(request.GET.get("limit", default=100))
+        audited_only = bool(int(request.GET.get("audited", default=0)))
         if limit > 9000:
             limit = 9000
 
@@ -423,9 +423,9 @@ class PermissionView(GrouperView):
 class UsersView(GrouperView):
     def get(self, request):
         # TODO: use cached users instead.
-        offset = int(self.get_argument("offset", 0))
-        limit = int(self.get_argument("limit", 100))
-        enabled = bool(int(self.get_argument("enabled", 1)))
+        offset = int(request.GET.get("offset", default=0))
+        limit = int(request.GET.get("limit", default=100))
+        enabled = bool(int(request.GET.get("enabled", default=1)))
         if limit > 9000:
             limit = 9000
 
@@ -524,8 +524,8 @@ class UserDisable(GrouperView):
 class UserRequests(GrouperView):
     """Handle list all pending requests for a single user."""
     def get(self, request):
-        offset = int(self.get_argument("offset", 0))
-        limit = int(self.get_argument("limit", 100))
+        offset = int(request.GET.get("offset", default=0))
+        limit = int(request.GET.get("limit", default=100))
         if limit > 9000:
             limit = 9000
 
@@ -828,9 +828,9 @@ class GroupRequests(GrouperView):
         if not group:
             return self.notfound()
 
-        status = self.get_argument("status", None)
-        offset = int(self.get_argument("offset", 0))
-        limit = int(self.get_argument("limit", 100))
+        status = request.GET.get("status", default=None)
+        offset = int(request.GET.get("offset", default=0))
+        limit = int(request.GET.get("limit", default=100))
         if limit > 9000:
             limit = 9000
 
@@ -1028,12 +1028,12 @@ class AuditsView(GrouperView):
         if not (user.has_permission(AUDIT_VIEWER) or user.has_permission(AUDIT_MANAGER)):
             return self.forbidden()
 
-        offset = int(self.get_argument("offset", 0))
-        limit = int(self.get_argument("limit", 50))
+        offset = int(request.GET.get("offset", default=0))
+        limit = int(request.GET.get("limit", default=50))
         if limit > 200:
             limit = 200
 
-        open_filter = self.get_argument("filter", "Open Audits")
+        open_filter = request.GET.get("filter", default="Open Audits")
         audits = get_audits(self.session, only_open=(open_filter == "Open Audits"))
 
         open_audits = any([not audit.complete for audit in audits])
@@ -1058,10 +1058,10 @@ class AuditsView(GrouperView):
 class GroupsView(GrouperView):
     def get(self, request):
         self.handle_refresh()
-        offset = int(self.get_argument("offset", 0))
-        limit = int(self.get_argument("limit", 100))
-        enabled = bool(int(self.get_argument("enabled", 1)))
-        audited_only = bool(int(self.get_argument("audited", 0)))
+        offset = int(request.GET.get("offset", default=0))
+        limit = int(request.GET.get("limit", default=100))
+        enabled = bool(int(request.GET.get("enabled", default=1)))
+        audited_only = bool(int(request.GET.get("audited", default=0)))
         if limit > 9000:
             limit = 9000
 

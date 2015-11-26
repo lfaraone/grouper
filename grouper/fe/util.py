@@ -82,11 +82,10 @@ class GrouperView(View):
         self.application = Application()
 
     def dispatch(self, *args, **kwargs):
-        request = args[0]
         self.session = self.application.my_settings.get("db_session")()
         self.graph = Graph()
 
-        if request.GET.get("_profile", False):
+        if self.request.GET.get("_profile", False):
             self.perf_collector = Collector()
             self.perf_trace_uuid = str(uuid4())
             self.perf_collector.start()
@@ -119,7 +118,7 @@ class GrouperView(View):
     # route calls this function, it will sync its graph from the database if
     # requested.
     def handle_refresh(self):
-        if self.get_argument("refresh", "no").lower() == "yes":
+        if self.request.GET.get("refresh", default="no").lower() == "yes":
             self.graph.update_from_db(self.session)
 
     def get_current_user(self):
