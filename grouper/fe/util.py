@@ -18,6 +18,7 @@ from tornado.web import RequestHandler
 from grouper import perf_profile
 from grouper.constants import AUDIT_SECURITY, RESERVED_NAMES, USERNAME_VALIDATION
 from grouper.fe.settings import settings
+from grouper.fe.template_util import get_template_env
 from grouper.graph import Graph
 from grouper.models import (
         get_db_engine,
@@ -55,13 +56,37 @@ else:
         pass
     RequestHandler = SentryHandler
 
+# XXX
+class Application(object):
+    def __init__(self):
+        template_env = get_template_env(deployment_name="")
+
+        Session.configure(bind=get_db_engine("sqlite:///db.sqlite3"))
+
+        logging.info("Initilializing graph data.")
+        session = Session()
+        graph = Graph()
+        graph.update_from_db(session)
+        session.close()
+
+        self.my_settings = {
+            "db_session": Session,
+            "template_env": template_env,
+        }
+
+
 
 class GrouperView(View):
+    def __init__(self, *args, **kwargs):
+        super(GrouperView, self).__init__(*args, **kwargs)
+        self.application = Application()
+
     def dispatch(self, *args, **kwargs):
+        request = args[0]
         self.session = self.application.my_settings.get("db_session")()
         self.graph = Graph()
 
-        if self.get_argument("_profile", False):
+        if request.GET.get("_profile", False):
             self.perf_collector = Collector()
             self.perf_trace_uuid = str(uuid4())
             self.perf_collector.start()
