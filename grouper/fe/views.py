@@ -42,14 +42,14 @@ from ..util import matches_glob
 
 
 class Index(GrouperView):
-    def get(self):
+    def get(self, request):
         # For now, redirect to viewing your own profile. TODO: maybe have a
         # Grouper home page where you can maybe do stuff?
         return self.redirect("/users/{}".format(self.current_user.name))
 
 
 class Search(GrouperView):
-    def get(self):
+    def get(self, request):
         query = self.get_argument("query", "")
         offset = int(self.get_argument("offset", 0))
         limit = int(self.get_argument("limit", 100))
@@ -91,7 +91,7 @@ class Search(GrouperView):
 
 
 class UserView(GrouperView):
-    def get(self, user_id=None, name=None):
+    def get(self, request, user_id=None, name=None):
         self.handle_refresh()
         user = User.get(self.session, user_id, name)
         if user_id is not None:
@@ -130,7 +130,7 @@ class UserView(GrouperView):
 
 
 class PermissionsCreate(GrouperView):
-    def get(self):
+    def get(self, request):
         can_create = self.current_user.my_creatable_permissions()
         if not can_create:
             return self.forbidden()
@@ -235,7 +235,7 @@ class PermissionEnableAuditing(GrouperView):
 
 
 class PermissionsGrant(GrouperView):
-    def get(self, name=None):
+    def get(self, request, name=None):
         grantable = self.current_user.my_grantable_permissions()
         if not grantable:
             return self.forbidden()
@@ -330,7 +330,7 @@ class PermissionsGrant(GrouperView):
 
 
 class PermissionsRevoke(GrouperView):
-    def get(self, name=None, mapping_id=None):
+    def get(self, request, name=None, mapping_id=None):
         grantable = self.current_user.my_grantable_permissions()
         if not grantable:
             return self.forbidden()
@@ -384,7 +384,7 @@ class PermissionsView(GrouperView):
     Controller for viewing the major permissions list. There is no privacy here; the existence of
     a permission is public.
     '''
-    def get(self, audited_only=False):
+    def get(self, request, audited_only=False):
         offset = int(self.get_argument("offset", 0))
         limit = int(self.get_argument("limit", 100))
         audited_only = bool(int(self.get_argument("audited", 0)))
@@ -404,7 +404,7 @@ class PermissionsView(GrouperView):
 
 
 class PermissionView(GrouperView):
-    def get(self, name=None):
+    def get(self, request, name=None):
         # TODO: use cached data instead, add refresh to appropriate redirects.
         permission = Permission.get(self.session, name)
         if not permission:
@@ -421,7 +421,7 @@ class PermissionView(GrouperView):
 
 
 class UsersView(GrouperView):
-    def get(self):
+    def get(self, request):
         # TODO: use cached users instead.
         offset = int(self.get_argument("offset", 0))
         limit = int(self.get_argument("limit", 100))
@@ -445,7 +445,7 @@ class UsersView(GrouperView):
 
 class UsersPublicKey(GrouperView):
     @ensure_audit_security(u'public_keys')
-    def get(self):
+    def get(self, request):
         form = UsersPublicKeyForm(self.request.arguments)
 
         user_key_list = self.session.query(
@@ -523,7 +523,7 @@ class UserDisable(GrouperView):
 
 class UserRequests(GrouperView):
     """Handle list all pending requests for a single user."""
-    def get(self):
+    def get(self, request):
         offset = int(self.get_argument("offset", 0))
         limit = int(self.get_argument("limit", 100))
         if limit > 9000:
@@ -539,7 +539,7 @@ class UserRequests(GrouperView):
 
 
 class GroupView(GrouperView):
-    def get(self, group_id=None, name=None):
+    def get(self, request, group_id=None, name=None):
         self.handle_refresh()
         group = Group.get(self.session, group_id, name)
         if not group:
@@ -584,7 +584,7 @@ class GroupView(GrouperView):
 
 
 class GroupEditMember(GrouperView):
-    def get(self, group_id=None, name=None, name2=None, member_type=None):
+    def get(self, request, group_id=None, name=None, name2=None, member_type=None):
         group = Group.get(self.session, group_id, name)
         if not group:
             return self.notfound()
@@ -695,7 +695,7 @@ class GroupEditMember(GrouperView):
 
 
 class GroupRequestUpdate(GrouperView):
-    def get(self, request_id, group_id=None, name=None):
+    def get(self, request, request_id, group_id=None, name=None):
         group = Group.get(self.session, group_id, name)
         if not group:
             return self.notfound()
@@ -823,7 +823,7 @@ class GroupRequestUpdate(GrouperView):
 
 
 class GroupRequests(GrouperView):
-    def get(self, group_id=None, name=None):
+    def get(self, request, group_id=None, name=None):
         group = Group.get(self.session, group_id, name)
         if not group:
             return self.notfound()
@@ -915,7 +915,7 @@ class AuditsComplete(GrouperView):
 
 
 class AuditsCreate(GrouperView):
-    def get(self):
+    def get(self, request):
         user = self.get_current_user()
         if not user.has_permission(AUDIT_MANAGER):
             return self.forbidden()
@@ -1023,7 +1023,7 @@ class AuditsCreate(GrouperView):
 
 
 class AuditsView(GrouperView):
-    def get(self):
+    def get(self, request):
         user = self.get_current_user()
         if not (user.has_permission(AUDIT_VIEWER) or user.has_permission(AUDIT_MANAGER)):
             return self.forbidden()
@@ -1056,7 +1056,7 @@ class AuditsView(GrouperView):
 
 
 class GroupsView(GrouperView):
-    def get(self):
+    def get(self, request):
         self.handle_refresh()
         offset = int(self.get_argument("offset", 0))
         limit = int(self.get_argument("limit", 100))
@@ -1157,7 +1157,7 @@ class GroupAdd(GrouperView):
         )
         return form
 
-    def get(self, group_id=None, name=None):
+    def get(self, request, group_id=None, name=None):
         group = Group.get(self.session, group_id, name)
         if not group:
             return self.notfound()
@@ -1285,7 +1285,7 @@ class GroupRemove(GrouperView):
 
 
 class GroupJoin(GrouperView):
-    def get(self, group_id=None, name=None):
+    def get(self, request, group_id=None, name=None):
         group = Group.get(self.session, group_id, name)
         if not group:
             return self.notfound()
@@ -1425,7 +1425,7 @@ class GroupJoin(GrouperView):
 
 
 class GroupLeave(GrouperView):
-    def get(self, group_id=None, name=None):
+    def get(self, request, group_id=None, name=None):
         group = Group.get(self.session, group_id, name)
         if not group:
             return self.notfound()
@@ -1457,7 +1457,7 @@ class GroupLeave(GrouperView):
 
 
 class GroupEdit(GrouperView):
-    def get(self, group_id=None, name=None):
+    def get(self, request, group_id=None, name=None):
         group = Group.get(self.session, group_id, name)
         if not group:
             return self.notfound()
@@ -1554,7 +1554,7 @@ class GroupDisable(GrouperView):
 
 
 class PublicKeyAdd(GrouperView):
-    def get(self, user_id=None, name=None):
+    def get(self, request, user_id=None, name=None):
         user = User.get(self.session, user_id, name)
         if not user:
             return self.notfound()
@@ -1614,7 +1614,7 @@ class PublicKeyAdd(GrouperView):
 
 
 class PublicKeyDelete(GrouperView):
-    def get(self, user_id=None, name=None, key_id=None):
+    def get(self, request, user_id=None, name=None, key_id=None):
         user = User.get(self.session, user_id, name)
         if not user:
             return self.notfound()
@@ -1659,7 +1659,7 @@ class PublicKeyDelete(GrouperView):
 
 
 class Help(GrouperView):
-    def get(self):
+    def get(self, request):
         permissions = (
             self.session.query(Permission)
             .order_by(Permission.name)
@@ -1675,19 +1675,19 @@ class Help(GrouperView):
 
 
 class NotFound(GrouperView):
-    def get(self):
+    def get(self, request):
         return self.notfound()
 
 
 # Don't use GraphHandler here as we don't want to count
 # these as requests.
 class Stats(RequestHandler):
-    def get(self):
+    def get(self, request):
         return self.write(stats.to_dict())
 
 
 class PerfProfile(RequestHandler):
-    def get(self, trace_uuid):
+    def get(self, request, trace_uuid):
         from grouper.models import Session
         try:
             flamegraph_svg = perf_profile.get_flamegraph_svg(Session(), trace_uuid)
