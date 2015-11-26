@@ -121,7 +121,8 @@ class GrouperView(View):
         if self.request.GET.get("refresh", default="no").lower() == "yes":
             self.graph.update_from_db(self.session)
 
-    def get_current_user(self):
+    @property
+    def current_user(self):
         username = "admin@example.com" #self.request.headers.get(settings.user_auth_header)
         if not username:
             return
@@ -234,7 +235,7 @@ class GrouperView(View):
         self.render("errors/notfound.html")
 
     def get_sentry_user_info(self):
-        user = self.get_current_user()
+        user = self.current_user
         return {
                 'username': user.name,
                 }
