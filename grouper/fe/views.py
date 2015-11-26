@@ -37,18 +37,18 @@ from ..models import (
     get_user_or_group, Audit, AuditMember, AUDIT_STATUS_CHOICES, AuditLogCategory,
 )
 from .settings import settings
-from .util import ensure_audit_security, GrouperHandler, Alert, test_reserved_names
+from .util import ensure_audit_security, GrouperView, Alert, test_reserved_names
 from ..util import matches_glob
 
 
-class Index(GrouperHandler):
+class Index(GrouperView):
     def get(self):
         # For now, redirect to viewing your own profile. TODO: maybe have a
         # Grouper home page where you can maybe do stuff?
         return self.redirect("/users/{}".format(self.current_user.name))
 
 
-class Search(GrouperHandler):
+class Search(GrouperView):
     def get(self):
         query = self.get_argument("query", "")
         offset = int(self.get_argument("offset", 0))
@@ -90,7 +90,7 @@ class Search(GrouperHandler):
                     offset=offset, limit=limit, total=total)
 
 
-class UserView(GrouperHandler):
+class UserView(GrouperView):
     def get(self, user_id=None, name=None):
         self.handle_refresh()
         user = User.get(self.session, user_id, name)
@@ -129,7 +129,7 @@ class UserView(GrouperHandler):
                     open_audits=open_audits)
 
 
-class PermissionsCreate(GrouperHandler):
+class PermissionsCreate(GrouperView):
     def get(self):
         can_create = self.current_user.my_creatable_permissions()
         if not can_create:
@@ -196,7 +196,7 @@ class PermissionsCreate(GrouperHandler):
         return self.redirect("/permissions/{}".format(permission.name))
 
 
-class PermissionDisableAuditing(GrouperHandler):
+class PermissionDisableAuditing(GrouperView):
     def post(self, user_id=None, name=None):
         if not self.current_user.permission_admin:
             return self.forbidden()
@@ -215,7 +215,7 @@ class PermissionDisableAuditing(GrouperHandler):
         return self.redirect("/permissions/{}".format(permission.name))
 
 
-class PermissionEnableAuditing(GrouperHandler):
+class PermissionEnableAuditing(GrouperView):
     def post(self, name=None):
         if not self.current_user.permission_admin:
             return self.forbidden()
@@ -234,7 +234,7 @@ class PermissionEnableAuditing(GrouperHandler):
         return self.redirect("/permissions/{}".format(permission.name))
 
 
-class PermissionsGrant(GrouperHandler):
+class PermissionsGrant(GrouperView):
     def get(self, name=None):
         grantable = self.current_user.my_grantable_permissions()
         if not grantable:
@@ -329,7 +329,7 @@ class PermissionsGrant(GrouperHandler):
         return self.redirect("/groups/{}?refresh=yes".format(group.name))
 
 
-class PermissionsRevoke(GrouperHandler):
+class PermissionsRevoke(GrouperView):
     def get(self, name=None, mapping_id=None):
         grantable = self.current_user.my_grantable_permissions()
         if not grantable:
@@ -379,7 +379,7 @@ class PermissionsRevoke(GrouperHandler):
         return self.redirect('/groups/{}?refresh=yes'.format(group.name))
 
 
-class PermissionsView(GrouperHandler):
+class PermissionsView(GrouperView):
     '''
     Controller for viewing the major permissions list. There is no privacy here; the existence of
     a permission is public.
@@ -403,7 +403,7 @@ class PermissionsView(GrouperHandler):
         )
 
 
-class PermissionView(GrouperHandler):
+class PermissionView(GrouperView):
     def get(self, name=None):
         # TODO: use cached data instead, add refresh to appropriate redirects.
         permission = Permission.get(self.session, name)
@@ -420,7 +420,7 @@ class PermissionView(GrouperHandler):
         )
 
 
-class UsersView(GrouperHandler):
+class UsersView(GrouperView):
     def get(self):
         # TODO: use cached users instead.
         offset = int(self.get_argument("offset", 0))
@@ -443,7 +443,7 @@ class UsersView(GrouperHandler):
         )
 
 
-class UsersPublicKey(GrouperHandler):
+class UsersPublicKey(GrouperView):
     @ensure_audit_security(u'public_keys')
     def get(self):
         form = UsersPublicKeyForm(self.request.arguments)
@@ -484,7 +484,7 @@ class UsersPublicKey(GrouperHandler):
         self.render("users-publickey.html", user_key_list=user_key_list, total=total, form=form)
 
 
-class UserEnable(GrouperHandler):
+class UserEnable(GrouperView):
     def post(self, user_id=None, name=None):
         if not self.current_user.user_admin:
             return self.forbidden()
@@ -502,7 +502,7 @@ class UserEnable(GrouperHandler):
         return self.redirect("/users/{}?refresh=yes".format(user.name))
 
 
-class UserDisable(GrouperHandler):
+class UserDisable(GrouperView):
     def post(self, user_id=None, name=None):
 
         if not self.current_user.user_admin:
@@ -521,7 +521,7 @@ class UserDisable(GrouperHandler):
         return self.redirect("/users/{}?refresh=yes".format(user.name))
 
 
-class UserRequests(GrouperHandler):
+class UserRequests(GrouperView):
     """Handle list all pending requests for a single user."""
     def get(self):
         offset = int(self.get_argument("offset", 0))
@@ -538,7 +538,7 @@ class UserRequests(GrouperHandler):
                 total=total)
 
 
-class GroupView(GrouperHandler):
+class GroupView(GrouperView):
     def get(self, group_id=None, name=None):
         self.handle_refresh()
         group = Group.get(self.session, group_id, name)
@@ -583,7 +583,7 @@ class GroupView(GrouperHandler):
         )
 
 
-class GroupEditMember(GrouperHandler):
+class GroupEditMember(GrouperView):
     def get(self, group_id=None, name=None, name2=None, member_type=None):
         group = Group.get(self.session, group_id, name)
         if not group:
@@ -694,7 +694,7 @@ class GroupEditMember(GrouperHandler):
         return self.redirect("/groups/{}?refresh=yes".format(group.name))
 
 
-class GroupRequestUpdate(GrouperHandler):
+class GroupRequestUpdate(GrouperView):
     def get(self, request_id, group_id=None, name=None):
         group = Group.get(self.session, group_id, name)
         if not group:
@@ -822,7 +822,7 @@ class GroupRequestUpdate(GrouperHandler):
         ]
 
 
-class GroupRequests(GrouperHandler):
+class GroupRequests(GrouperView):
     def get(self, group_id=None, name=None):
         group = Group.get(self.session, group_id, name)
         if not group:
@@ -849,7 +849,7 @@ class GroupRequests(GrouperHandler):
         )
 
 
-class AuditsComplete(GrouperHandler):
+class AuditsComplete(GrouperView):
     def post(self, audit_id):
         user = self.get_current_user()
         if not user.has_permission(PERMISSION_AUDITOR):
@@ -914,7 +914,7 @@ class AuditsComplete(GrouperHandler):
         return self.redirect('/groups/{}'.format(audit.group.name))
 
 
-class AuditsCreate(GrouperHandler):
+class AuditsCreate(GrouperView):
     def get(self):
         user = self.get_current_user()
         if not user.has_permission(AUDIT_MANAGER):
@@ -1022,7 +1022,7 @@ class AuditsCreate(GrouperHandler):
         return self.redirect("/audits")
 
 
-class AuditsView(GrouperHandler):
+class AuditsView(GrouperView):
     def get(self):
         user = self.get_current_user()
         if not (user.has_permission(AUDIT_VIEWER) or user.has_permission(AUDIT_MANAGER)):
@@ -1055,7 +1055,7 @@ class AuditsView(GrouperHandler):
         )
 
 
-class GroupsView(GrouperHandler):
+class GroupsView(GrouperView):
     def get(self):
         self.handle_refresh()
         offset = int(self.get_argument("offset", 0))
@@ -1123,7 +1123,7 @@ class GroupsView(GrouperHandler):
         return self.redirect("/groups/{}?refresh=yes".format(group.name))
 
 
-class GroupAdd(GrouperHandler):
+class GroupAdd(GrouperView):
     def get_form(self, role=None):
         """Helper to create a GroupAddForm populated with all users and groups as options.
 
@@ -1250,7 +1250,7 @@ class GroupAdd(GrouperHandler):
         return self.redirect("/groups/{}?refresh=yes".format(group.name))
 
 
-class GroupRemove(GrouperHandler):
+class GroupRemove(GrouperView):
     def post(self, group_id=None, name=None):
         group = Group.get(self.session, group_id, name)
         if not group:
@@ -1284,7 +1284,7 @@ class GroupRemove(GrouperHandler):
         return self.redirect("/groups/{}?refresh=yes".format(group.name))
 
 
-class GroupJoin(GrouperHandler):
+class GroupJoin(GrouperView):
     def get(self, group_id=None, name=None):
         group = Group.get(self.session, group_id, name)
         if not group:
@@ -1424,7 +1424,7 @@ class GroupJoin(GrouperHandler):
         return choices
 
 
-class GroupLeave(GrouperHandler):
+class GroupLeave(GrouperView):
     def get(self, group_id=None, name=None):
         group = Group.get(self.session, group_id, name)
         if not group:
@@ -1456,7 +1456,7 @@ class GroupLeave(GrouperHandler):
         return self.redirect("/groups/{}?refresh=yes".format(group.name))
 
 
-class GroupEdit(GrouperHandler):
+class GroupEdit(GrouperView):
     def get(self, group_id=None, name=None):
         group = Group.get(self.session, group_id, name)
         if not group:
@@ -1507,7 +1507,7 @@ class GroupEdit(GrouperHandler):
         return self.redirect("/groups/{}".format(group.name))
 
 
-class GroupEnable(GrouperHandler):
+class GroupEnable(GrouperView):
     def post(self, group_id=None, name=None):
         group = Group.get(self.session, group_id, name)
         if not group:
@@ -1526,7 +1526,7 @@ class GroupEnable(GrouperHandler):
         return self.redirect("/groups/{}?refresh=yes".format(group.name))
 
 
-class GroupDisable(GrouperHandler):
+class GroupDisable(GrouperView):
     def post(self, group_id=None, name=None):
         group = Group.get(self.session, group_id, name)
         if not group:
@@ -1553,7 +1553,7 @@ class GroupDisable(GrouperHandler):
         return self.redirect("/groups/{}?refresh=yes".format(group.name))
 
 
-class PublicKeyAdd(GrouperHandler):
+class PublicKeyAdd(GrouperView):
     def get(self, user_id=None, name=None):
         user = User.get(self.session, user_id, name)
         if not user:
@@ -1613,7 +1613,7 @@ class PublicKeyAdd(GrouperHandler):
         return self.redirect("/users/{}?refresh=yes".format(user.name))
 
 
-class PublicKeyDelete(GrouperHandler):
+class PublicKeyDelete(GrouperView):
     def get(self, user_id=None, name=None, key_id=None):
         user = User.get(self.session, user_id, name)
         if not user:
@@ -1658,7 +1658,7 @@ class PublicKeyDelete(GrouperHandler):
         return self.redirect("/users/{}?refresh=yes".format(user.name))
 
 
-class Help(GrouperHandler):
+class Help(GrouperView):
     def get(self):
         permissions = (
             self.session.query(Permission)
@@ -1674,7 +1674,7 @@ class Help(GrouperHandler):
                     audit_perm=d[PERMISSION_AUDITOR])
 
 
-class NotFound(GrouperHandler):
+class NotFound(GrouperView):
     def get(self):
         return self.notfound()
 

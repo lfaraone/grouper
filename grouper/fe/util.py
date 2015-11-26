@@ -6,6 +6,9 @@ import sys
 import urllib
 from uuid import uuid4
 
+from django.shortcuts import redirect, render
+from django.views.generic import View
+
 from expvar.stats import stats
 from plop.collector import Collector
 import sqlalchemy.exc
@@ -53,8 +56,8 @@ else:
     RequestHandler = SentryHandler
 
 
-class GrouperHandler(RequestHandler):
-    def initialize(self):
+class GrouperView(View):
+    def dispatch(self, *args, **kwargs):
         self.session = self.application.my_settings.get("db_session")()
         self.graph = Graph()
 
@@ -69,6 +72,7 @@ class GrouperHandler(RequestHandler):
         self._request_start_time = datetime.utcnow()
         stats.incr("requests")
         stats.incr("requests_{}".format(self.__class__.__name__))
+        return super(GrouperView, self).dispatch(*args, **kwargs)
 
     def write_error(self, status_code, **kwargs):
         """Override for custom error page."""
@@ -94,7 +98,7 @@ class GrouperHandler(RequestHandler):
             self.graph.update_from_db(self.session)
 
     def get_current_user(self):
-        username = self.request.headers.get(settings.user_auth_header)
+        username = "admin@example.com" #self.request.headers.get(settings.user_auth_header)
         if not username:
             return
 
