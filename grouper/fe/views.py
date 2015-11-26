@@ -86,7 +86,7 @@ class Search(GrouperView):
             result = results[0]
             return self.redirect("/{}s/{}".format(result.type.lower(), result.name))
 
-        self.render("search.html", results=results, search_query=query,
+        return self.render("search.html", results=results, search_query=query,
                     offset=offset, limit=limit, total=total)
 
 
@@ -123,7 +123,7 @@ class UserView(GrouperView):
         public_keys = user.my_public_keys()
         permissions = user_md.get('permissions', [])
         log_entries = user.my_log_entries()
-        self.render("user.html", user=user, groups=groups, public_keys=public_keys,
+        return self.render("user.html", user=user, groups=groups, public_keys=public_keys,
                     can_control=can_control, permissions=permissions,
                     log_entries=log_entries, num_pending_requests=num_pending_requests,
                     open_audits=open_audits)
@@ -347,7 +347,7 @@ class PermissionsRevoke(GrouperView):
         if not allowed:
             return self.forbidden()
 
-        self.render("permission-revoke.html", mapping=mapping)
+        return self.render("permission-revoke.html", mapping=mapping)
 
     def post(self, name=None, mapping_id=None):
         grantable = self.current_user.my_grantable_permissions()
@@ -397,7 +397,7 @@ class PermissionsView(GrouperView):
 
         can_create = self.current_user.my_creatable_permissions()
 
-        self.render(
+        return self.render(
             "permissions.html", permissions=permissions, offset=offset, limit=limit, total=total,
             can_create=can_create, audited_permissions=audited_only
         )
@@ -414,7 +414,7 @@ class PermissionView(GrouperView):
         mapped_groups = permission.get_mapped_groups()
         log_entries = permission.my_log_entries()
 
-        self.render(
+        return self.render(
             "permission.html", permission=permission, can_delete=can_delete,
             mapped_groups=mapped_groups, log_entries=log_entries,
         )
@@ -437,7 +437,7 @@ class UsersView(GrouperView):
         total = users.count()
         users = users.offset(offset).limit(limit).all()
 
-        self.render(
+        return self.render(
             "users.html", users=users, offset=offset, limit=limit, total=total,
             enabled=enabled,
         )
@@ -481,7 +481,7 @@ class UsersPublicKey(GrouperView):
         total = user_key_list.count()
         user_key_list = user_key_list.offset(form.offset.data).limit(form.limit.data)
 
-        self.render("users-publickey.html", user_key_list=user_key_list, total=total, form=form)
+        return self.render("users-publickey.html", user_key_list=user_key_list, total=total, form=form)
 
 
 class UserEnable(GrouperView):
@@ -534,7 +534,7 @@ class UserRequests(GrouperView):
         total = requests.count()
         requests = requests.offset(offset).limit(limit)
 
-        self.render("user-requests.html", requests=requests, offset=offset, limit=limit,
+        return self.render("user-requests.html", requests=requests, offset=offset, limit=limit,
                 total=total)
 
 
@@ -575,7 +575,7 @@ class GroupView(GrouperView):
         if self_pending:
             alerts.append(Alert('info', 'You have a pending request to join this group.', None))
 
-        self.render(
+        return self.render(
             "group.html", group=group, members=members, groups=groups,
             num_pending=num_pending, alerts=alerts, permissions=permissions,
             log_entries=log_entries, grantable=grantable, audited=audited,
@@ -620,7 +620,7 @@ class GroupEditMember(GrouperView):
         form.role.data = edge.role
         form.expiration.data = edge.expiration.strftime("%m/%d/%Y") if edge.expiration else None
 
-        self.render(
+        return self.render(
             "group-edit-member.html", group=group, member=member, edge=edge, form=form,
         )
 
@@ -714,7 +714,7 @@ class GroupRequestUpdate(GrouperView):
 
         updates = request.my_status_updates()
 
-        self.render(
+        return self.render(
             "group-request-update.html", group=group, request=request,
             members=members, form=form, statuses=REQUEST_STATUS_CHOICES, updates=updates
         )
@@ -842,7 +842,7 @@ class GroupRequests(GrouperView):
         total = requests.count()
         requests = requests.offset(offset).limit(limit)
 
-        self.render(
+        return self.render(
             "group-requests.html", group=group, requests=requests,
             members=members, status=status, statuses=REQUEST_STATUS_CHOICES,
             offset=offset, limit=limit, total=total
@@ -920,7 +920,7 @@ class AuditsCreate(GrouperView):
         if not user.has_permission(AUDIT_MANAGER):
             return self.forbidden()
 
-        self.render(
+        return self.render(
             "audit-create.html", form=AuditCreateForm(),
         )
 
@@ -1048,7 +1048,7 @@ class AuditsView(GrouperView):
         audit_log_entries = AuditLog.get_entries(self.session, category=AuditLogCategory.audit,
                 limit=100)
 
-        self.render(
+        return self.render(
             "audits.html", audits=audits, open_filter=open_filter, can_start=can_start,
             offset=offset, limit=limit, total=total, open_audits=open_audits,
             audit_log_entries=audit_log_entries,
@@ -1080,7 +1080,7 @@ class GroupsView(GrouperView):
 
         form = GroupCreateForm()
 
-        self.render(
+        return self.render(
             "groups.html", groups=groups, form=form,
             offset=offset, limit=limit, total=total, audited_groups=audited_only,
             directly_audited_groups=directly_audited_groups, enabled=enabled,
@@ -1467,7 +1467,7 @@ class GroupEdit(GrouperView):
 
         form = GroupEditForm(obj=group)
 
-        self.render("group-edit.html", group=group, form=form)
+        return self.render("group-edit.html", group=group, form=form)
 
     def post(self, group_id=None, name=None):
         group = Group.get(self.session, group_id, name)
@@ -1562,7 +1562,7 @@ class PublicKeyAdd(GrouperView):
         if (user.name != self.current_user.name) and not self.current_user.user_admin:
             return self.forbidden()
 
-        self.render("public-key-add.html", form=PublicKeyForm(), user=user)
+        return self.render("public-key-add.html", form=PublicKeyForm(), user=user)
 
     def post(self, user_id=None, name=None):
         user = User.get(self.session, user_id, name)
@@ -1626,7 +1626,7 @@ class PublicKeyDelete(GrouperView):
         if not key:
             return self.notfound()
 
-        self.render("public-key-delete.html", user=user, key=key)
+        return self.render("public-key-delete.html", user=user, key=key)
 
     def post(self, user_id=None, name=None, key_id=None):
         user = User.get(self.session, user_id, name)
@@ -1666,7 +1666,7 @@ class Help(GrouperView):
         )
         d = {permission.name: permission for permission in permissions}
 
-        self.render("help.html",
+        return self.render("help.html",
                     how_to_get_help=settings.how_to_get_help,
                     site_docs=settings.site_docs,
                     grant_perm=d[PERMISSION_GRANT],
