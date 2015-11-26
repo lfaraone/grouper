@@ -184,12 +184,12 @@ class GrouperView(View):
         return ""
 
     def get_template_namespace(self):
-        namespace = super(GrouperHandler, self).get_template_namespace()
+        # XXX
+        namespace = {} #super(GrouperViewer, self).get_template_namespace()
         namespace.update({
             "update_qs": self.update_qs,
             "is_active": self.is_active,
             "perf_trace_uuid": self.perf_trace_uuid,
-            "xsrf_form": self.xsrf_form_html,
             "alerts": [],
         })
         return namespace
