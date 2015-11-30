@@ -92,8 +92,10 @@ def get_template_env(package="grouper.fe", deployment_name="",
     if extra_globals:
         j_globals.update(extra_globals)
 
-    env = Environment(loader=PackageLoader(package, "templates"))
+    env = Environment(loader=PackageLoader(package, "templates"), extensions=['jinja2.ext.autoescape',])
     env.filters.update(filters)
     env.globals.update(j_globals)
 
+    print env.__dict__
+    print "foo"
     return env

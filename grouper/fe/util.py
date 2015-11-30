@@ -6,7 +6,7 @@ import sys
 import urllib
 from uuid import uuid4
 
-from django.shortcuts import redirect, render
+from django.shortcuts import redirect, render_to_response
 from django.views.generic import View
 
 from expvar.stats import stats
@@ -203,7 +203,11 @@ class GrouperView(View):
         context = {}
         context.update(self.get_template_namespace())
         context.update(kwargs)
-        self.write(self.render_template(template_name, **context))
+
+        context["current_user"] = self.request.user
+        if "search_query" not in context:
+            context["search_query"] = ""
+        return render_to_response(template_name, context=context)
 
     def get_form_alerts(self, errors):
         alerts = []
