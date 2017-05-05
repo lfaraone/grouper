@@ -55,7 +55,7 @@ def test_fe_password_add(session, users, http_client, base_url):
     fe_url = url(base_url, '/users/{}/passwords/add'.format(user.username))
     resp = yield http_client.fetch(fe_url, method="POST",
             body=urlencode({'name': "test", "password": TEST_PASSWORD}),
-            headers={'X-Grouper-User': user.username})
+            headers={'X-Merou-User': user.username})
     assert resp.code == 200
 
     user = session.query(User).filter_by(name="zorkian@a.co").scalar()
@@ -67,12 +67,12 @@ def test_fe_password_add(session, users, http_client, base_url):
         fe_url = url(base_url, '/users/{}/passwords/add'.format(user.username))
         resp = yield http_client.fetch(fe_url, method="POST",
                 body=urlencode({'name': "test", "password": TEST_PASSWORD}),
-                headers={'X-Grouper-User': "testuser@a.co"})
+                headers={'X-Merou-User': "testuser@a.co"})
 
     fe_url = url(base_url, '/users/{}/passwords/add'.format(user.username))
     resp = yield http_client.fetch(fe_url, method="POST",
             body=urlencode({'name': "test", "password": TEST_PASSWORD}),
-            headers={'X-Grouper-User': user.username})
+            headers={'X-Merou-User': user.username})
     assert resp.code == 200
 
     user = session.query(User).filter_by(name="zorkian@a.co").scalar()
@@ -82,7 +82,7 @@ def test_fe_password_add(session, users, http_client, base_url):
     fe_url = url(base_url, '/users/{}/passwords/add'.format(user.username))
     resp = yield http_client.fetch(fe_url, method="POST",
             body=urlencode({'name': "test", "password": TEST_PASSWORD}),
-            headers={'X-Grouper-User': user.username})
+            headers={'X-Merou-User': user.username})
     assert resp.code == 200
 
     user = session.query(User).filter_by(name="testuser@a.co").scalar()
@@ -97,7 +97,7 @@ def test_fe_password_delete(session, users, http_client, base_url):
     fe_url = url(base_url, '/users/{}/passwords/add'.format(user.username))
     resp = yield http_client.fetch(fe_url, method="POST",
             body=urlencode({'name': "test", "password": TEST_PASSWORD}),
-            headers={'X-Grouper-User': user.username})
+            headers={'X-Merou-User': user.username})
     assert resp.code == 200
 
     user = session.query(User).filter_by(name="zorkian@a.co").scalar()
@@ -109,7 +109,7 @@ def test_fe_password_delete(session, users, http_client, base_url):
     fe_url = url(base_url, '/users/{}/passwords/add'.format(user.username))
     resp = yield http_client.fetch(fe_url, method="POST",
             body=urlencode({'name': "test", "password": TEST_PASSWORD}),
-            headers={'X-Grouper-User': user.username})
+            headers={'X-Merou-User': user.username})
     assert resp.code == 200
 
     user = session.query(User).filter_by(name="testuser@a.co").scalar()
@@ -122,13 +122,13 @@ def test_fe_password_delete(session, users, http_client, base_url):
         fe_url = url(base_url, '/users/{}/passwords/{}/delete'.format(user.username, user_passwords(session, user)[0].id))
         resp = yield http_client.fetch(fe_url, method="POST",
                 body="",
-                headers={'X-Grouper-User': "testuser@a.co"})
+                headers={'X-Merou-User': "testuser@a.co"})
 
     user = session.query(User).filter_by(name="zorkian@a.co").scalar()
     fe_url = url(base_url, '/users/{}/passwords/{}/delete'.format(user.username, user_passwords(session, user)[0].id))
     resp = yield http_client.fetch(fe_url, method="POST",
             body="",
-            headers={'X-Grouper-User': user.username})
+            headers={'X-Merou-User': user.username})
     assert resp.code == 200
 
     user = session.query(User).filter_by(name="zorkian@a.co").scalar()

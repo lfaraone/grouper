@@ -209,7 +209,7 @@ def filter_grantable_permissions(session, grants, all_permissions=None):
 def get_owners_by_grantable_permission(session):
     """
     Returns all known permission arguments with owners. This consolidates
-    permission grants supported by grouper itself as well as any grants
+    permission grants supported by Merou itself as well as any grants
     governed by plugins.
 
     Args:
@@ -294,7 +294,7 @@ def get_grantable_permissions(session, restricted_ownership_permissions):
 
 
 def get_owner_arg_list(session, permission, argument, owners_by_arg_by_perm=None):
-    """Return the grouper group(s) responsible for approving a request for the
+    """Return the Merou group(s) responsible for approving a request for the
     given permission + argument along with the actual argument they were
     granted.
 

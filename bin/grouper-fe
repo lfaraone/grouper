@@ -95,7 +95,7 @@ if __name__ == "__main__":
     setup_signal_handlers()
     try:
         # get arguments
-        parser = argparse.ArgumentParser(description="Grouper Web Server.")
+        parser = argparse.ArgumentParser(description="Merou Web Server.")
         args = parse_args(parser, default_settings_path())
 
         # load settings

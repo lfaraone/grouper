@@ -1,7 +1,7 @@
 """
 plugin.py
 
-Base plugin for Grouper plugins. These are plugins that can be written to extend Grouper
+Base plugin for Merou plugins. These are plugins that can be written to extend Merou
 functionality.
 """
 from annex import Annex
@@ -34,7 +34,7 @@ class BasePlugin(object):
     def user_created(self, user):
         """Called when a new user is created
 
-        When new users enter into Grouper, you might have reason to set metadata on those
+        When new users enter into Merou, you might have reason to set metadata on those
         users for some reason. This method is called when that happens.
 
         Args:
@@ -76,7 +76,7 @@ class BasePlugin(object):
         Returns:
             dict of the form {'permission_name': {'argument': [owner1, owner2,
             ...], ...}, ...} where 'ownerN' is a models.Group corresponding to
-            the grouper group that owns (read: is able to) grant that
+            the Merou group that owns (read: is able to) grant that
             permission + argument pair.
         """
         pass

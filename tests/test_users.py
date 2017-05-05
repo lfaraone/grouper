@@ -76,19 +76,19 @@ def test_user_tok_acls(session, graph, users, user_admin_perm_to_auditors, http_
     # admin creating token for role user
     fe_url = url(base_url, "/users/{}/tokens/add".format(role_user))
     resp = yield http_client.fetch(fe_url, method="POST",
-            headers={"X-Grouper-User": admin}, body=urlencode({"name": "foo"}))
+            headers={"X-Merou-User": admin}, body=urlencode({"name": "foo"}))
     assert resp.code == 200
 
     with pytest.raises(HTTPError):
         # non-admin creating token for role user
         resp = yield http_client.fetch(fe_url, method="POST",
-                headers={"X-Grouper-User": pleb}, body=urlencode({"name": "foo2"}))
+                headers={"X-Merou-User": pleb}, body=urlencode({"name": "foo2"}))
 
     fe_url = url(base_url, "/users/{}/tokens/add".format(pleb))
     with pytest.raises(HTTPError):
         # admin creating token for normal (non-role) user
         resp = yield http_client.fetch(fe_url, method="POST",
-                headers={"X-Grouper-User": admin}, body=urlencode({"name": "foo3"}))
+                headers={"X-Merou-User": admin}, body=urlencode({"name": "foo3"}))
 
 
 
@@ -113,7 +113,7 @@ def test_graph_disable(session, graph, users, groups, user_admin_perm_to_auditor
     username = u"oliver@a.co"
     fe_url = url(base_url, "/users/{}/disable".format(username))
     resp = yield http_client.fetch(fe_url, method="POST",
-            headers={"X-Grouper-User": "zorkian@a.co"}, body=urlencode({}))
+            headers={"X-Merou-User": "zorkian@a.co"}, body=urlencode({}))
     assert resp.code == 200
 
     graph.update_from_db(session)
@@ -129,13 +129,13 @@ def test_user_disable(session, graph, users, user_admin_perm_to_auditors, http_c
     # disable user
     fe_url = url(base_url, "/users/{}/disable".format(username))
     resp = yield http_client.fetch(fe_url, method="POST",
-            headers={"X-Grouper-User": "zorkian@a.co"}, body=urlencode({}))
+            headers={"X-Merou-User": "zorkian@a.co"}, body=urlencode({}))
     assert resp.code == 200
 
     # enable user, PRESERVE groups
     fe_url = url(base_url, "/users/{}/enable".format(username))
     resp = yield http_client.fetch(fe_url, method="POST",
-            headers={"X-Grouper-User": "zorkian@a.co"},
+            headers={"X-Merou-User": "zorkian@a.co"},
             body=urlencode({"preserve_membership": "true"}))
     assert resp.code == 200
     graph.update_from_db(session)
@@ -144,12 +144,12 @@ def test_user_disable(session, graph, users, user_admin_perm_to_auditors, http_c
     # disable and enable, PURGE groups
     fe_url = url(base_url, "/users/{}/disable".format(username))
     resp = yield http_client.fetch(fe_url, method="POST",
-            headers={"X-Grouper-User": "zorkian@a.co"}, body=urlencode({}))
+            headers={"X-Merou-User": "zorkian@a.co"}, body=urlencode({}))
     assert resp.code == 200
 
     fe_url = url(base_url, "/users/{}/enable".format(username))
     resp = yield http_client.fetch(fe_url, method="POST",
-            headers={"X-Grouper-User": "zorkian@a.co"}, body=urlencode({}))
+            headers={"X-Merou-User": "zorkian@a.co"}, body=urlencode({}))
     assert resp.code == 200
 
     graph.update_from_db(session)

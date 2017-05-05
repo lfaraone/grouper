@@ -4,9 +4,9 @@ common:
     # http://docs.sqlalchemy.org/en/rel_0_9/core/engines.html#database-urls
     #
     # Type: str
-    database: "sqlite:///grouper.sqlite"
+    database: "sqlite:///merou.sqlite"
 
-    # If this exists, it should be the path to an executable that Grouper will run. This program
+    # If this exists, it should be the path to an executable that Merou will run. This program
     # should print a single SqlAlchemy URL and exit 0.
     #
     # Type: str
@@ -18,7 +18,7 @@ common:
     log_format: "%(asctime)-15s\t%(levelname)s\t%(message)s  [%(name)s]"
 
     # Directory for plugins. If set, load plugins from this directory. Plugins can affect the
-    # behavior of Grouper.
+    # behavior of Merou.
     # Type: str
     plugin_dir: ""
 
@@ -41,19 +41,19 @@ common:
 
     # Address to send email from
     # Type: str
-    from_addr: "no-reply@grouper.local"
+    from_addr: "no-reply@merou.local"
 
     # Number of days for approvers of audited groups who are not auditors to become auditors
     # before being expired out of the group
     # Type: int
     nonauditor_expiration_days: 5
 
-    # Url is the location of the Grouper homepage, no trailing slash. This should include a
+    # Url is the location of the Merou homepage, no trailing slash. This should include a
     # port if one is needed.
     # Type: str
     url: "http://127.0.0.1:8888"
 
-    service_brand: "Grouper"
+    service_brand: "Merou"
 
 fe:
     # Number of worker processes to fork for receving requests. This option
@@ -92,13 +92,13 @@ fe:
 
     # Header to check for Authenticated Username
     # Type: str
-    user_auth_header: "X-Grouper-User"
+    user_auth_header: "X-Merou-User"
 
     # How often to pull cache data from database in seconds.
     # Type: int
     refresh_interval: 1
 
-    # How to get help from the people who run this Grouper deployment.
+    # How to get help from the people who run this Merou deployment.
     # Type: str
     how_to_get_help: "not arranged"
 
@@ -117,7 +117,7 @@ fe:
     # Type: str
     sentry_dsn:
 
-    # Url is the location of the Grouper homepage, no trailing slash. This should include a
+    # Url is the location of the Merou homepage, no trailing slash. This should include a
     # port if one is needed.
     # Type: str
     url: "http://127.0.0.1:8888"
@@ -126,7 +126,7 @@ fe:
     # the shell location (i.e. /bin/bash), and the second is a user readable format for the
     # shell
     shell:
-        - [/bin/false, Your administrator has not configured Grouper for shell management]
+        - [/bin/false, Your administrator has not configured Merou for shell management]
 
     # The email domain that all service accounts must have
     # Type: str
@@ -155,7 +155,7 @@ api:
     # Type: str
     sentry_dsn:
 
-    # Url is the location of the Grouper homepage, no trailing slash. This should include a
+    # Url is the location of the Merou homepage, no trailing slash. This should include a
     # port if one is needed.
     # Type: str
     url: "http://127.0.0.1:8888"

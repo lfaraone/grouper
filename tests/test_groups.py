@@ -248,7 +248,7 @@ def test_graph_disable(session, graph, groups, http_client, base_url):  # noqa
     # disable a group
     fe_url = url(base_url, '/groups/{}/disable'.format(groupname))
     resp = yield http_client.fetch(fe_url, method="POST",
-            headers={"X-Grouper-User": "zorkian@a.co"}, body=urlencode({"name": groupname}))
+            headers={"X-Merou-User": "zorkian@a.co"}, body=urlencode({"name": groupname}))
     assert resp.code == 200
 
     graph.update_from_db(session)
@@ -263,7 +263,7 @@ def test_group_disable(session, groups, http_client, base_url):
     fe_url = url(base_url, '/audits/create')
     ends_at = date.today() + timedelta(days=7)
     resp = yield http_client.fetch(fe_url, method="POST",
-            headers={"X-Grouper-User": "zorkian@a.co"},
+            headers={"X-Merou-User": "zorkian@a.co"},
             body=urlencode({"ends_at": ends_at.strftime("%m/%d/%Y")}))
     assert resp.code == 200
 
@@ -276,12 +276,12 @@ def test_group_disable(session, groups, http_client, base_url):
     fe_url = url(base_url, '/groups/serving-team/disable')
     with pytest.raises(HTTPError):
         resp = yield http_client.fetch(fe_url, method="POST",
-                headers={"X-Grouper-User": "gary@a.co"}, body=urlencode({"name": "serving-team"}))
+                headers={"X-Merou-User": "gary@a.co"}, body=urlencode({"name": "serving-team"}))
 
     # disable
     fe_url = url(base_url, '/groups/serving-team/disable')
     resp = yield http_client.fetch(fe_url, method="POST",
-            headers={"X-Grouper-User": "zorkian@a.co"}, body=urlencode({"name": "serving-team"}))
+            headers={"X-Merou-User": "zorkian@a.co"}, body=urlencode({"name": "serving-team"}))
     assert resp.code == 200
 
     serving_team, just_created = Group.get_or_create(session, groupname="serving-team")

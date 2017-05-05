@@ -35,10 +35,10 @@ def test_auth(users, http_client, base_url):
 
     # invalid user
     with pytest.raises(HTTPError):
-        resp = yield http_client.fetch(base_url, headers={'X-Grouper-User': 'nobody'})
+        resp = yield http_client.fetch(base_url, headers={'X-Merou-User': 'nobody'})
 
     # valid user
-    resp = yield http_client.fetch(base_url, headers={'X-Grouper-User': 'zorkian@a.co'})
+    resp = yield http_client.fetch(base_url, headers={'X-Merou-User': 'zorkian@a.co'})
     assert resp.code == 200
 
 
@@ -60,14 +60,14 @@ def test_public_key(session, users, http_client, base_url):
     fe_url = url(base_url, '/users/{}/public-key/add'.format(user.username))
     resp = yield http_client.fetch(fe_url, method="POST",
             body=urlencode({'public_key': good_key}),
-            headers={'X-Grouper-User': user.username})
+            headers={'X-Merou-User': user.username})
     assert resp.code == 200
 
     # add bad key -- shouldn't add
     fe_url = url(base_url, '/users/{}/public-key/add'.format(user.username))
     resp = yield http_client.fetch(fe_url, method="POST",
             body=urlencode({'public_key': bad_key}),
-            headers={'X-Grouper-User': user.username})
+            headers={'X-Merou-User': user.username})
     assert resp.code == 200
 
     user = User.get(session, name=user.username)
@@ -79,7 +79,7 @@ def test_public_key(session, users, http_client, base_url):
     # delete it
     fe_url = url(base_url, '/users/{}/public-key/{}/delete'.format(user.username, keys[0].id))
     resp = yield http_client.fetch(fe_url, method="POST", body='',
-            headers={'X-Grouper-User': user.username})
+            headers={'X-Merou-User': user.username})
     assert resp.code == 200
 
     user = User.get(session, name=user.username)
@@ -89,7 +89,7 @@ def test_public_key(session, users, http_client, base_url):
     fe_url = url(base_url, '/users/{}/public-key/add'.format(user.username))
     resp = yield http_client.fetch(fe_url, method="POST",
             body=urlencode({'public_key': good_key}),
-            headers={'X-Grouper-User': user.username})
+            headers={'X-Merou-User': user.username})
     assert resp.code == 200
 
     user = User.get(session, name=user.username)
@@ -100,7 +100,7 @@ def test_public_key(session, users, http_client, base_url):
     # have an admin delete it
     fe_url = url(base_url, '/users/{}/public-key/{}/delete'.format(user.username, keys[0].id))
     resp = yield http_client.fetch(fe_url, method="POST", body='',
-            headers={'X-Grouper-User': "tyleromeara@a.co"})
+            headers={'X-Merou-User': "tyleromeara@a.co"})
     assert resp.code == 200
 
     user = User.get(session, name=user.username)
@@ -115,7 +115,7 @@ def test_sa_pubkeys(session, users, http_client, base_url):
     fe_url = url(base_url, '/service/create')
     resp = yield http_client.fetch(fe_url, method="POST",
             body=urlencode({'name': 'bob@hello.com', "description": "Hi", "canjoin": "canjoin"}),
-            headers={'X-Grouper-User': user.username})
+            headers={'X-Merou-User': user.username})
     assert resp.code == 200
 
     assert User.get(session, name="bob@hello.com") is None
@@ -125,7 +125,7 @@ def test_sa_pubkeys(session, users, http_client, base_url):
     fe_url = url(base_url, '/service/create')
     resp = yield http_client.fetch(fe_url, method="POST",
             body=urlencode({'name': 'bob@svc.localhost', "description": "Hi", "canjoin": "canjoin"}),
-            headers={'X-Grouper-User': user.username})
+            headers={'X-Merou-User': user.username})
     assert resp.code == 200
 
     u = User.get(session, name="bob@svc.localhost")
@@ -156,20 +156,20 @@ def test_sa_pubkeys(session, users, http_client, base_url):
         fe_url = url(base_url, '/users/{}/public-key/add'.format("bob@svc.localhost"))
         resp = yield http_client.fetch(fe_url, method="POST",
                 body=urlencode({'public_key': good_key}),
-                headers={'X-Grouper-User': "gary@a.co"})
+                headers={'X-Merou-User': "gary@a.co"})
 
     # add it
     fe_url = url(base_url, '/users/{}/public-key/add'.format("bob@svc.localhost"))
     resp = yield http_client.fetch(fe_url, method="POST",
             body=urlencode({'public_key': good_key}),
-            headers={'X-Grouper-User': user.username})
+            headers={'X-Merou-User': user.username})
     assert resp.code == 200
 
     # add bad key -- shouldn't add
     fe_url = url(base_url, '/users/{}/public-key/add'.format("bob@svc.localhost"))
     resp = yield http_client.fetch(fe_url, method="POST",
             body=urlencode({'public_key': bad_key}),
-            headers={'X-Grouper-User': user.username})
+            headers={'X-Merou-User': user.username})
     assert resp.code == 200
 
     sa = User.get(session, name="bob@svc.localhost")
@@ -181,12 +181,12 @@ def test_sa_pubkeys(session, users, http_client, base_url):
         # delete it
         fe_url = url(base_url, '/users/{}/public-key/{}/delete'.format("bob@svc.localhost", keys[0].id))
         resp = yield http_client.fetch(fe_url, method="POST", body='',
-                headers={'X-Grouper-User': "gary@a.co"})
+                headers={'X-Merou-User': "gary@a.co"})
 
     # delete it
     fe_url = url(base_url, '/users/{}/public-key/{}/delete'.format("bob@svc.localhost", keys[0].id))
     resp = yield http_client.fetch(fe_url, method="POST", body='',
-            headers={'X-Grouper-User': user.username})
+            headers={'X-Merou-User': user.username})
     assert resp.code == 200
 
     sa = User.get(session, name="bob@svc.localhost")
@@ -202,13 +202,13 @@ def test_usertokens(session, users, http_client, base_url):
     fe_url = url(base_url, '/users/{}/tokens/add'.format(user.username))
     resp = yield http_client.fetch(fe_url, method="POST",
             body=urlencode({'name': 'myFoobarToken'}),
-            headers={'X-Grouper-User': user.username})
+            headers={'X-Merou-User': user.username})
     assert resp.code == 200
 
     # Verify add
     fe_url = url(base_url, '/users/{}'.format(user.username))
     resp = yield http_client.fetch(fe_url, method="GET",
-            headers={'X-Grouper-User': user.username})
+            headers={'X-Merou-User': user.username})
     assert resp.code == 200
     assert "Added token: myFoobarToken" in resp.body
 
@@ -216,13 +216,13 @@ def test_usertokens(session, users, http_client, base_url):
     fe_url = url(base_url, '/users/{}/tokens/1/disable'.format(user.username))
     resp = yield http_client.fetch(fe_url, method="POST",
             body="",
-            headers={'X-Grouper-User': user.username})
+            headers={'X-Merou-User': user.username})
     assert resp.code == 200
 
     # Verify disable
     fe_url = url(base_url, '/users/{}'.format(user.username))
     resp = yield http_client.fetch(fe_url, method="GET",
-            headers={'X-Grouper-User': user.username})
+            headers={'X-Merou-User': user.username})
     assert resp.code == 200
     assert "Disabled token: myFoobarToken" in resp.body
 
@@ -230,13 +230,13 @@ def test_usertokens(session, users, http_client, base_url):
     fe_url = url(base_url, '/users/{}/tokens/add'.format(user.username))
     resp = yield http_client.fetch(fe_url, method="POST",
             body=urlencode({'name': 'my_Foobar_Token'}),
-            headers={'X-Grouper-User': user.username})
+            headers={'X-Merou-User': user.username})
     assert resp.code == 200
 
     # Verify noadd
     fe_url = url(base_url, '/users/{}'.format(user.username))
     resp = yield http_client.fetch(fe_url, method="GET",
-            headers={'X-Grouper-User': user.username})
+            headers={'X-Merou-User': user.username})
     assert resp.code == 200
     assert "Added token: my_Foobar_Token" not in resp.body
 
@@ -250,7 +250,7 @@ def test_sa_tokens(session, users, http_client, base_url):
     fe_url = url(base_url, '/service/create')
     resp = yield http_client.fetch(fe_url, method="POST",
             body=urlencode({'name': 'bob@hello.com', "description": "Hi", "canjoin": "canjoin"}),
-            headers={'X-Grouper-User': user.username})
+            headers={'X-Merou-User': user.username})
     assert resp.code == 200
 
     assert User.get(session, name="bob@hello.com") is None
@@ -260,7 +260,7 @@ def test_sa_tokens(session, users, http_client, base_url):
     fe_url = url(base_url, '/service/create')
     resp = yield http_client.fetch(fe_url, method="POST",
             body=urlencode({'name': 'bob@svc.localhost', "description": "Hi", "canjoin": "canjoin"}),
-            headers={'X-Grouper-User': user.username})
+            headers={'X-Merou-User': user.username})
     assert resp.code == 200
 
     u = User.get(session, name="bob@svc.localhost")
@@ -280,19 +280,19 @@ def test_sa_tokens(session, users, http_client, base_url):
         fe_url = url(base_url, '/users/{}/tokens/add'.format("bob@svc.localhost"))
         resp = yield http_client.fetch(fe_url, method="POST",
                 body=urlencode({'name': 'myDHDToken'}),
-                headers={'X-Grouper-User': "gary@a.co"})
+                headers={'X-Merou-User': "gary@a.co"})
 
     # Add token
     fe_url = url(base_url, '/users/{}/tokens/add'.format("bob@svc.localhost"))
     resp = yield http_client.fetch(fe_url, method="POST",
             body=urlencode({'name': 'myDHDToken'}),
-            headers={'X-Grouper-User': user.username})
+            headers={'X-Merou-User': user.username})
     assert resp.code == 200
 
     # Verify add
     fe_url = url(base_url, '/users/{}'.format("bob@svc.localhost"))
     resp = yield http_client.fetch(fe_url, method="GET",
-            headers={'X-Grouper-User': user.username})
+            headers={'X-Merou-User': user.username})
     assert resp.code == 200
     assert "Added token: myDHDToken" in resp.body
 
@@ -301,19 +301,19 @@ def test_sa_tokens(session, users, http_client, base_url):
         fe_url = url(base_url, '/users/{}/tokens/1/disable'.format("bob@svc.localhost"))
         resp = yield http_client.fetch(fe_url, method="POST",
                 body="",
-                headers={'X-Grouper-User': "gary@a.co"})
+                headers={'X-Merou-User': "gary@a.co"})
 
     # Disable token
     fe_url = url(base_url, '/users/{}/tokens/1/disable'.format("bob@svc.localhost"))
     resp = yield http_client.fetch(fe_url, method="POST",
             body="",
-            headers={'X-Grouper-User': user.username})
+            headers={'X-Merou-User': user.username})
     assert resp.code == 200
 
     # Verify disable
     fe_url = url(base_url, '/users/{}'.format("bob@svc.localhost"))
     resp = yield http_client.fetch(fe_url, method="GET",
-            headers={'X-Grouper-User': user.username})
+            headers={'X-Merou-User': user.username})
     assert resp.code == 200
     assert "Disabled token: myDHDToken" in resp.body
 
@@ -337,7 +337,7 @@ def test_request_emails(graph, groups, permissions, session, standard_graph, use
     fe_url = url(base_url, '/groups/{}/join'.format(tech.groupname))
     resp = yield http_client.fetch(fe_url, method="POST",
             body=urlencode({"reason": "Test Request Please Ignore", "member": "User: {}".format(user.name)}),
-            headers={'X-Grouper-User': user.username})
+            headers={'X-Merou-User': user.username})
     assert resp.code == 200
 
     zaya_emails = len(_get_unsent_and_mark_as_sent_emails_with_username(session, "zay@a.co"))
@@ -355,7 +355,7 @@ def test_request_emails(graph, groups, permissions, session, standard_graph, use
     fe_url = url(base_url, '/groups/{}/requests/{}'.format(tech.groupname, request_id))
     resp = yield http_client.fetch(fe_url, method="POST",
             body=urlencode({"reason": "Test Response Please Ignore", "status": "actioned"}),
-            headers={'X-Grouper-User': "zay@a.co"})
+            headers={'X-Merou-User': "zay@a.co"})
     assert resp.code == 200
 
     fh_emails = len(_get_unsent_and_mark_as_sent_emails_with_username(session, "figurehead@a.co"))
@@ -374,7 +374,7 @@ def test_request_emails(graph, groups, permissions, session, standard_graph, use
     fe_url = url(base_url, '/groups/{}/join'.format(tech.groupname))
     resp = yield http_client.fetch(fe_url, method="POST",
             body=urlencode({"reason": "Test Request Please Ignore 2", "member": "User: {}".format(user.name)}),
-            headers={'X-Grouper-User': user.username})
+            headers={'X-Merou-User': user.username})
     assert resp.code == 200
 
     zaya_emails = len(_get_unsent_and_mark_as_sent_emails_with_username(session, "zay@a.co"))
@@ -392,7 +392,7 @@ def test_request_emails(graph, groups, permissions, session, standard_graph, use
     fe_url = url(base_url, '/groups/{}/requests/{}'.format(tech.groupname, request_id))
     resp = yield http_client.fetch(fe_url, method="POST",
             body=urlencode({"reason": "Test Response Please Ignore 2", "status": "actioned"}),
-            headers={'X-Grouper-User': "figurehead@a.co"})
+            headers={'X-Merou-User': "figurehead@a.co"})
     assert resp.code == 200
 
     zaya_emails = len(_get_unsent_and_mark_as_sent_emails_with_username(session, "zay@a.co"))
@@ -441,7 +441,7 @@ def test_request_autoexpiration(graph, groups, permissions, session, standard_gr
     fe_url = url(base_url, '/groups/{}/join'.format(tech.groupname))
     resp = yield http_client.fetch(fe_url, method="POST",
             body=urlencode({"reason": "Test Request Please Ignore", "member": "User: {}".format(user.name)}),
-            headers={'X-Grouper-User': user.username})
+            headers={'X-Merou-User': user.username})
     assert resp.code == 200
 
     # Explicitly requery because pulling from the users dict causes DetachedSessionErrors
@@ -457,7 +457,7 @@ def test_request_autoexpiration(graph, groups, permissions, session, standard_gr
     fe_url = url(base_url, '/groups/{}/join'.format(sre.groupname))
     resp = yield http_client.fetch(fe_url, method="POST",
             body=urlencode({"reason": "Test Request Please Ignore", "member": "User: {}".format(user.name)}),
-            headers={'X-Grouper-User': user.username})
+            headers={'X-Merou-User': user.username})
     assert resp.code == 200
 
     # Explicitly requery because pulling from the users dict causes DetachedSessionErrors
@@ -473,7 +473,7 @@ def test_request_autoexpiration(graph, groups, permissions, session, standard_gr
     fe_url = url(base_url, '/groups/{}/join'.format(security.groupname))
     resp = yield http_client.fetch(fe_url, method="POST",
             body=urlencode({"reason": "Test Request Please Ignore", "member": "User: {}".format(user.name)}),
-            headers={'X-Grouper-User': user.username})
+            headers={'X-Merou-User': user.username})
     assert resp.code == 200
 
     # Explicitly requery because pulling from the users dict causes DetachedSessionErrors
@@ -489,7 +489,7 @@ def test_request_autoexpiration(graph, groups, permissions, session, standard_gr
     fe_url = url(base_url, '/groups/{}/join'.format(sad.groupname))
     resp = yield http_client.fetch(fe_url, method="POST",
             body=urlencode({"reason": "Test Request Please Ignore", "member": "User: {}".format(user.name), "expiration": "01/19/2038"}),
-            headers={'X-Grouper-User': user.username})
+            headers={'X-Merou-User': user.username})
     assert resp.code == 200
 
     # Explicitly requery because pulling from the users dict causes DetachedSessionErrors
@@ -505,7 +505,7 @@ def test_request_autoexpiration(graph, groups, permissions, session, standard_gr
     fe_url = url(base_url, '/groups/{}/add'.format(infra.groupname))
     resp = yield http_client.fetch(fe_url, method="POST",
             body=urlencode({"reason": "Test Request Please Ignore", "member": "User: {}".format(user.name)}),
-            headers={'X-Grouper-User': "gary@a.co"})
+            headers={'X-Merou-User': "gary@a.co"})
     assert resp.code == 200
 
     # Explicitly requery because pulling from the users dict causes DetachedSessionErrors
@@ -521,7 +521,7 @@ def test_request_autoexpiration(graph, groups, permissions, session, standard_gr
     fe_url = url(base_url, '/groups/{}/edit/user/{}'.format(sre.groupname, user.name))
     resp = yield http_client.fetch(fe_url, method="POST",
             body=urlencode({"reason": "Test Request Please Ignore", "member": "User: {}".format(user.name), "role": "member", "expiration": ""}),
-            headers={'X-Grouper-User': "gary@a.co"})
+            headers={'X-Merou-User': "gary@a.co"})
     assert resp.code == 200
 
     # Explicitly requery because pulling from the users dict causes DetachedSessionErrors
@@ -538,7 +538,7 @@ def test_add_service_account(session, users, http_client, base_url):
     fe_url = url(base_url, '/service/create')
     resp = yield http_client.fetch(fe_url, method="POST",
             body=urlencode({'name': 'bob@hello.com', "description": "Hi", "canjoin": "canjoin"}),
-            headers={'X-Grouper-User': user.username})
+            headers={'X-Merou-User': user.username})
     assert resp.code == 200
 
     assert User.get(session, name="bob@hello.com") is None
@@ -548,7 +548,7 @@ def test_add_service_account(session, users, http_client, base_url):
     fe_url = url(base_url, '/service/create')
     resp = yield http_client.fetch(fe_url, method="POST",
             body=urlencode({'name': 'bob@svc.localhost', "description": "Hi", "canjoin": "canjoin"}),
-            headers={'X-Grouper-User': user.username})
+            headers={'X-Merou-User': user.username})
     assert resp.code == 200
 
     u = User.get(session, name="bob@svc.localhost")
@@ -572,7 +572,7 @@ def test_disable_service_account(session, users, http_client, base_url):
     fe_url = url(base_url, '/service/create')
     resp = yield http_client.fetch(fe_url, method="POST",
             body=urlencode({'name': 'bob@hello.com', "description": "Hi", "canjoin": "canjoin"}),
-            headers={'X-Grouper-User': user.username})
+            headers={'X-Merou-User': user.username})
     assert resp.code == 200
 
     assert User.get(session, name="bob@hello.com") is None
@@ -582,7 +582,7 @@ def test_disable_service_account(session, users, http_client, base_url):
     fe_url = url(base_url, '/service/create')
     resp = yield http_client.fetch(fe_url, method="POST",
             body=urlencode({'name': 'bob@svc.localhost', "description": "Hi", "canjoin": "canjoin"}),
-            headers={'X-Grouper-User': user.username})
+            headers={'X-Merou-User': user.username})
     assert resp.code == 200
 
     u = User.get(session, name="bob@svc.localhost")
@@ -613,7 +613,7 @@ def test_disable_service_account(session, users, http_client, base_url):
         fe_url = url(base_url, '/groups/{}/disable'.format("bob@svc.localhost"))
         resp = yield http_client.fetch(fe_url, method="POST",
                 body="",
-                headers={'X-Grouper-User': user.username})
+                headers={'X-Merou-User': user.username})
 
     u = User.get(session, name="bob@svc.localhost")
     assert u.enabled, "Attempting to disable SAs through groups/disable should not work"
@@ -623,7 +623,7 @@ def test_disable_service_account(session, users, http_client, base_url):
     fe_url = url(base_url, '/users/{}/disable'.format("bob@svc.localhost"))
     resp = yield http_client.fetch(fe_url, method="POST",
             body="",
-            headers={'X-Grouper-User': user.username})
+            headers={'X-Merou-User': user.username})
 
     u = User.get(session, name="bob@svc.localhost")
     assert not u.enabled, "The SA User should be disabled"
@@ -634,7 +634,7 @@ def test_disable_service_account(session, users, http_client, base_url):
         fe_url = url(base_url, '/groups/{}/enable'.format("bob@svc.localhost"))
         resp = yield http_client.fetch(fe_url, method="POST",
                 body="",
-                headers={'X-Grouper-User': user.username})
+                headers={'X-Merou-User': user.username})
 
     u = User.get(session, name="bob@svc.localhost")
     assert not u.enabled, "Attempting to enable SAs through groups/enable should not work"

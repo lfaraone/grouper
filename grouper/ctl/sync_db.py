@@ -40,12 +40,12 @@ def sync_db_command(args):
             raise Exception('Failed to create permission: %s' % (name, ))
         session.commit()
 
-    # This group is needed to bootstrap a Grouper installation.
+    # This group is needed to bootstrap a Merou installation.
     admin_group = Group.get(session, name="grouper-administrators")
     if not admin_group:
         admin_group = Group(
                 groupname="grouper-administrators",
-                description="Administrators of the Grouper system.",
+                description="Administrators of the Merou system.",
                 canjoin="nobody",
         )
 

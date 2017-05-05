@@ -1,6 +1,6 @@
 
 class Error(Exception):
-    """ Baseclass for Grouper Exceptions."""
+    """ Baseclass for Merou Exceptions."""
 
 
 class ModelError(Error):

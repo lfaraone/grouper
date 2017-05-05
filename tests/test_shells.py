@@ -24,7 +24,7 @@ def test_shell(session, users, http_client, base_url):
         fe_url = url(base_url, '/users/{}/shell'.format(user.username))
         resp = yield http_client.fetch(fe_url, method="POST",
                 body=urlencode({'shell': "/bin/bash"}),
-                headers={'X-Grouper-User': user.username})
+                headers={'X-Merou-User': user.username})
         assert resp.code == 200
 
         user = User.get(session, name=user.username)
@@ -37,7 +37,7 @@ def test_shell(session, users, http_client, base_url):
         fe_url = url(base_url, '/users/{}/shell'.format(user.username))
         resp = yield http_client.fetch(fe_url, method="POST",
                 body=urlencode({'shell': "/bin/fish"}),
-                headers={'X-Grouper-User': user.username})
+                headers={'X-Merou-User': user.username})
         assert resp.code == 200
 
         user = User.get(session, name=user.username)
@@ -50,7 +50,7 @@ def test_shell(session, users, http_client, base_url):
         fe_url = url(base_url, '/users/{}/shell'.format(user.username))
         resp = yield http_client.fetch(fe_url, method="POST",
                 body=urlencode({'shell': "/bin/zsh"}),
-                headers={'X-Grouper-User': user.username})
+                headers={'X-Merou-User': user.username})
         assert resp.code == 200
 
         user = User.get(session, name=user.username)

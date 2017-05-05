@@ -5,7 +5,7 @@ import setuptools  # noqa
 
 from distutils.core import setup
 
-# this defines __version__ for use below without assuming grouper is in the
+# this defines __version__ for use below without assuming Merou is in the
 # path or importable during build
 execfile('grouper/version.py')
 
@@ -27,7 +27,7 @@ get_package_data("grouper", "grouper/fe/static")
 get_package_data("grouper", "grouper/fe/templates")
 
 kwargs = {
-    "name": "grouper",
+    "name": "merou",
     "version": str(__version__),  # noqa
     "packages": ["grouper", "grouper.fe", "grouper.api", "grouper.ctl"],
     "package_data": package_data,
@@ -41,8 +41,8 @@ kwargs = {
     "maintainer_email": "gary@dropbox.com",
     "license": "Apache",
     "install_requires": required,
-    "url": "https://github.com/dropbox/grouper",
-    "download_url": "https://github.com/dropbox/grouper/archive/master.tar.gz",
+    "url": "https://github.com/dropbox/merou",
+    "download_url": "https://github.com/dropbox/merou/archive/master.tar.gz",
     "classifiers": [
         "Programming Language :: Python",
         "Topic :: Software Development",

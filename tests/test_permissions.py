@@ -240,7 +240,7 @@ def test_permission_request_flow(session, standard_graph, groups, grantable_perm
     resp = yield http_client.fetch(fe_url, method="POST",
             body=urlencode({"permission_name": "grantable.one", "argument": "some argument",
                 "reason": "blah blah black sheep", "argument_type": "text"}),
-            headers={'X-Grouper-User': username})
+            headers={'X-Merou-User': username})
     assert resp.code == 200
 
     emails = _get_unsent_and_mark_as_sent_emails(session)
@@ -264,7 +264,7 @@ def test_permission_request_flow(session, standard_graph, groups, grantable_perm
     fe_url = url(base_url, "/permissions/requests/{}".format(request_id))
     resp = yield http_client.fetch(fe_url, method="POST",
             body=urlencode({"status": "actioned", "reason": "lgtm"}),
-            headers={'X-Grouper-User': user.name})
+            headers={'X-Merou-User': user.name})
     assert resp.code == 200
 
     perms = _load_permissions_by_group_name(session, 'serving-team')
@@ -281,7 +281,7 @@ def test_permission_request_flow(session, standard_graph, groups, grantable_perm
     resp = yield http_client.fetch(fe_url, method="POST",
             body=urlencode({"permission_name": "grantable.one", "argument": "some argument",
                 "reason": "blah blah black sheep", "argument_type": "text"}),
-            headers={'X-Grouper-User': username})
+            headers={'X-Merou-User': username})
     assert resp.code == 200
 
     user = User.get(session, name='testuser@a.co')
@@ -295,7 +295,7 @@ def test_permission_request_flow(session, standard_graph, groups, grantable_perm
     resp = yield http_client.fetch(fe_url, method="POST",
             body=urlencode({"permission_name": "grantable.two", "argument": "some argument",
                 "reason": "blah blah black sheep", "argument_type": "text"}),
-            headers={'X-Grouper-User': username})
+            headers={'X-Merou-User': username})
     assert resp.code == 200
 
     emails = _get_unsent_and_mark_as_sent_emails(session)
@@ -318,7 +318,7 @@ def test_permission_request_flow(session, standard_graph, groups, grantable_perm
     fe_url = url(base_url, "/permissions/requests/{}".format(request_id))
     resp = yield http_client.fetch(fe_url, method="POST",
             body=urlencode({"status": "cancelled", "reason": "heck no"}),
-            headers={'X-Grouper-User': user.name})
+            headers={'X-Merou-User': user.name})
     assert resp.code == 200
 
     emails = _get_unsent_and_mark_as_sent_emails(session)
@@ -349,7 +349,7 @@ def test_limited_permissions(session, standard_graph, groups, grantable_permissi
     resp = yield http_client.fetch(fe_url, method="POST",
             body=urlencode({"permission_name": perm1.name, "argument": "specific_arg",
                 "reason": "blah blah black sheep", "argument_type": "text"}),
-            headers={'X-Grouper-User': username})
+            headers={'X-Merou-User': username})
     assert resp.code == 200
 
     emails = _get_unsent_and_mark_as_sent_emails(session)
@@ -379,7 +379,7 @@ def test_grant_and_revoke(session, standard_graph, graph, groups, permissions,
     with pytest.raises(HTTPError):
         yield http_client.fetch(fe_url, method="POST",
                 body=urlencode({"permission": permission_name, "argument": "specific_arg"}),
-                headers={'X-Grouper-User': "zorkian@a.co"})
+                headers={'X-Merou-User': "zorkian@a.co"})
 
     graph.update_from_db(session)
     assert not _check_graph_for_perm(graph), "no permissions granted"
@@ -387,7 +387,7 @@ def test_grant_and_revoke(session, standard_graph, graph, groups, permissions,
     # grant by permission admin
     resp = yield http_client.fetch(fe_url, method="POST",
             body=urlencode({"permission": permission_name, "argument": "specific_arg"}),
-            headers={'X-Grouper-User': user_name})
+            headers={'X-Merou-User': user_name})
     assert resp.code == 200
 
     graph.update_from_db(session)
@@ -404,14 +404,14 @@ def test_grant_and_revoke(session, standard_graph, graph, groups, permissions,
     fe_url = url(base_url, "/permissions/{}/revoke/{}".format(permission_name, mapping.id))
     with pytest.raises(HTTPError):
         yield http_client.fetch(fe_url, method="POST", body=urlencode({}),
-                headers={'X-Grouper-User': "zorkian@a.co"})
+                headers={'X-Merou-User': "zorkian@a.co"})
 
     graph.update_from_db(session)
     assert _check_graph_for_perm(graph), "permissions not revoked"
 
     # revoke permission for realz
     resp = yield http_client.fetch(fe_url, method="POST", body=urlencode({}),
-            headers={'X-Grouper-User': user_name})
+            headers={'X-Merou-User': user_name})
     assert resp.code == 200
 
     graph.update_from_db(session)

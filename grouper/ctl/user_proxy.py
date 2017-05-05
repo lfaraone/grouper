@@ -9,7 +9,7 @@ def user_proxy_command(args):
     class ServerArgs(object):
         def __init__(self, backend_port, username):
             self.backend_port = backend_port
-            self.header = ["X-Grouper-User: %s" % username]
+            self.header = ["X-Merou-User: %s" % username]
 
     username = args.username
     if username is None:

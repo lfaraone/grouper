@@ -94,7 +94,7 @@ settings = Settings({
     "database_source": None,
     "expiration_notice_days": 7,
     "nonauditor_expiration_days": 5,
-    "from_addr": "no-reply@grouper.local",
+    "from_addr": "no-reply@merou.local",
     "log_format": "%(asctime)-15s\t%(levelname)s\t%(message)s",
     "oneoff_dir": None,
     "plugin_dir": None,

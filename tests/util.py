@@ -1,6 +1,6 @@
 import grouper.permissions
 
-# These functions operate on and return instrumented Grouper.models.Model instances.
+# These functions operate on and return instrumented Merou.models.Model instances.
 def add_member(parent, member, role="member", expiration=None):
     return parent.add_member(member, member, "Unit Testing", "actioned", role=role,
                              expiration=expiration)

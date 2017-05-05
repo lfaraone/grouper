@@ -1,6 +1,7 @@
 *.swp
 .env
 grouper.sqlite
+merou.sqlite
 
 __pycache__
 

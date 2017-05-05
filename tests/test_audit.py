@@ -99,7 +99,7 @@ def test_audit_end_to_end(session, users, groups, http_client, base_url, graph):
     end_at_str = (datetime.now() + timedelta(days=10)).strftime('%m/%d/%Y')
     fe_url = url(base_url, '/audits/create')
     resp = yield http_client.fetch(fe_url, method="POST",
-            body=urlencode({'ends_at': end_at_str}), headers={'X-Grouper-User': 'zorkian@a.co'})
+            body=urlencode({'ends_at': end_at_str}), headers={'X-Merou-User': 'zorkian@a.co'})
     assert resp.code == 200
 
     open_audits = get_audits(session, only_open=True).all()
@@ -127,7 +127,7 @@ def test_audit_end_to_end(session, users, groups, http_client, base_url, graph):
                 one_audit.audit_members})
 
         resp = yield http_client.fetch(fe_url, method="POST", body=body,
-                headers={'X-Grouper-User': one_audit.owner_name})
+                headers={'X-Merou-User': one_audit.owner_name})
         assert resp.code == 200
 
     open_audits = get_audits(session, only_open=True).all()
@@ -148,7 +148,7 @@ def test_audit_end_to_end(session, users, groups, http_client, base_url, graph):
     owner_name = one_audit.group.my_owners().iterkeys().next()
     fe_url = url(base_url, '/audits/{}/complete'.format(one_audit.id))
     resp = yield http_client.fetch(fe_url, method="POST", body=urlencode(body_dict),
-            headers={'X-Grouper-User': owner_name})
+            headers={'X-Merou-User': owner_name})
     assert resp.code == 200
 
     # check all the logs

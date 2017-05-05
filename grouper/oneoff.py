@@ -1,5 +1,5 @@
 """
-Base class for Grouper oneoffs. These are scripts are run in the grouper
+Base class for Merou oneoffs. These are scripts are run in the Merou
 environment via grouper-ctl.
 """
 

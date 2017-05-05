@@ -42,7 +42,7 @@ TAG_EDIT = "grouper.tag.edit"
 
 # Permissions that are always created and are reserved.
 SYSTEM_PERMISSIONS = [
-    (PERMISSION_CREATE, "Ability to create permissions within Grouper."),
+    (PERMISSION_CREATE, "Ability to create permissions within Merou."),
     (PERMISSION_GRANT, "Ability to grant a permission to a group."),
     (PERMISSION_AUDITOR, "Ability to own or manage groups with audited permissions."),
     (PERMISSION_ADMIN, "Ability to manipulate any permission."),
@@ -74,5 +74,5 @@ RESERVED_NAMES = [
 # Maximum length a name can be. This applies to user names and permission arguments.
 MAX_NAME_LENGTH = 128
 
-# Grouper used UserMetadata data_keys
+# Merou used UserMetadata data_keys
 USER_METADATA_SHELL_KEY = "shell"

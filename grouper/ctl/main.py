@@ -20,7 +20,7 @@ sa_log = logging.getLogger("sqlalchemy.engine.base.Engine")
 
 
 def main(sys_argv=sys.argv, start_config_thread=True):
-    description_msg = "Grouper Control"
+    description_msg = "Merou Control"
     parser = argparse.ArgumentParser(description=description_msg)
 
     parser.add_argument("-c", "--config", default=default_settings_path(),

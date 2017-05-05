@@ -1,16 +1,16 @@
 =======
-grouper
+Merou
 =======
 
-.. image:: https://travis-ci.org/dropbox/grouper.png?branch=master
+.. image:: https://travis-ci.org/dropbox/merou.png?branch=master
     :alt: Build Status
-    :target: https://travis-ci.org/dropbox/grouper
+    :target: https://travis-ci.org/dropbox/merou
 
 
 Description
 -----------
 
-Grouper is an application to allow users to create and manage
+Merou is an application to allow users to create and manage
 memberships to their own groups.
 
 **Warning**: This project is still very much in flux and likely
@@ -27,9 +27,9 @@ On Debian-based systems:
 .. code:: bash
 
     apt-get install libmysqlclient-dev libpython2.7-dev
-    pip install -e git+https://github.com/dropbox/grouper#egg=grouper
+    pip install -e git+https://github.com/dropbox/merou#egg=merou
 
-Next you need to configure grouper to find a SQL-style backing database
+Next you need to configure Merou to find a SQL-style backing database
 and stand up processes to serve the read-write web UI and read-only
 programmatic API. There's an sample configuration file, suitable for
 local development and testing, in ``config/dev.yaml``.
@@ -38,7 +38,7 @@ local development and testing, in ``config/dev.yaml``.
 Running a Test instance
 -----------------------
 
-Grouper runs behind a reverse proxy that handles authentication and so
+Merou runs behind a reverse proxy that handles authentication and so
 expects a valid, authenticated, user account. I've included a test proxy
 for running on development instances.
 
@@ -70,7 +70,7 @@ Creating a development instance:
 Setting up the first groups and permissions
 -------------------------------------------
 
-In order to bootstrap your new Grouper environment, you will want to
+In order to bootstrap your new Merou environment, you will want to
 create a user for yourself and add it to the ``grouper-administrators``
 group.
 
@@ -82,6 +82,6 @@ group.
     bin/grouper-ctl -vv\
         user create $USER@example.com
 
-    # Give the user administrative access to the Grouper instance
+    # Give the user administrative access to the Merou instance
     bin/grouper-ctl -vv \
         group add_member --owner grouper-administrators $USER@example.com

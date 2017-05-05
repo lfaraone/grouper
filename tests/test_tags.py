@@ -41,7 +41,7 @@ def test_create_tag(users, http_client, base_url, session):
     fe_url = url(base_url, '/tags')
     resp = yield http_client.fetch(fe_url, method="POST",
             body=urlencode({'tagname': "tyler_was_here", "description": "Test Tag Please Ignore"}),
-            headers={'X-Grouper-User': user.username})
+            headers={'X-Merou-User': user.username})
     assert resp.code == 200
 
     tag = PublicKeyTag.get(session, name="tyler_was_here")
@@ -58,7 +58,7 @@ def test_add_tag(users, http_client, base_url, session):
     fe_url = url(base_url, '/users/{}/public-key/add'.format(user.username))
     resp = yield http_client.fetch(fe_url, method="POST",
             body=urlencode({'public_key': key_1}),
-            headers={'X-Grouper-User': user.username})
+            headers={'X-Merou-User': user.username})
     assert resp.code == 200
 
     key = session.query(PublicKey).filter_by(user_id=user.id).scalar()
@@ -67,7 +67,7 @@ def test_add_tag(users, http_client, base_url, session):
     fe_url = url(base_url, '/users/{}/public-key/add'.format(user.username))
     resp = yield http_client.fetch(fe_url, method="POST",
             body=urlencode({'public_key': key_2}),
-            headers={'X-Grouper-User': user.username})
+            headers={'X-Merou-User': user.username})
     assert resp.code == 200
 
     key2 = session.query(PublicKey).filter_by(public_key=key_2).scalar()
@@ -75,7 +75,7 @@ def test_add_tag(users, http_client, base_url, session):
     fe_url = url(base_url, '/tags')
     resp = yield http_client.fetch(fe_url, method="POST",
             body=urlencode({'tagname': "tyler_was_here", "description": "Test Tag Please Ignore"}),
-            headers={'X-Grouper-User': user.username})
+            headers={'X-Merou-User': user.username})
 
     tag = PublicKeyTag.get(session, name="tyler_was_here")
 
@@ -85,7 +85,7 @@ def test_add_tag(users, http_client, base_url, session):
     fe_url = url(base_url, '/tags')
     resp = yield http_client.fetch(fe_url, method="POST",
             body=urlencode({'tagname': "dont_tag_me_bro", "description": "Test Tag Please Ignore"}),
-            headers={'X-Grouper-User': user.username})
+            headers={'X-Merou-User': user.username})
 
     tag = PublicKeyTag.get(session, name="dont_tag_me_bro")
 
@@ -95,7 +95,7 @@ def test_add_tag(users, http_client, base_url, session):
     fe_url = url(base_url, '/users/{}/public-key/{}/tag'.format(user.username, key.id))
     resp = yield http_client.fetch(fe_url, method="POST",
             body=urlencode({'tagname': "tyler_was_here"}),
-            headers={'X-Grouper-User': user.username})
+            headers={'X-Merou-User': user.username})
 
     assert resp.code == 200
     key = session.query(PublicKey).filter_by(public_key=key_1).scalar()
@@ -110,7 +110,7 @@ def test_add_tag(users, http_client, base_url, session):
     with pytest.raises(HTTPError):
         resp = yield http_client.fetch(fe_url, method="POST",
                 body=urlencode({'tagname': "tyler_was_here"}),
-                headers={'X-Grouper-User': "zorkian@a.co"})
+                headers={'X-Merou-User': "zorkian@a.co"})
 
     key = session.query(PublicKey).filter_by(public_key=key_1).scalar()
     assert len(get_public_key_tags(session, key)) == 1, "The key should have exactly 1 tag"
@@ -120,7 +120,7 @@ def test_add_tag(users, http_client, base_url, session):
     fe_url = url(base_url, '/users/{}/public-key/{}/tag'.format(user.username, key.id))
     resp = yield http_client.fetch(fe_url, method="POST",
             body=urlencode({'tagname': "dont_tag_me_bro"}),
-            headers={'X-Grouper-User': "tyleromeara@a.co"})
+            headers={'X-Merou-User': "tyleromeara@a.co"})
 
     assert resp.code == 200
     key = session.query(PublicKey).filter_by(public_key=key_1).scalar()
@@ -138,7 +138,7 @@ def test_remove_tag(users, http_client, base_url, session):
     fe_url = url(base_url, '/users/{}/public-key/add'.format(user.username))
     resp = yield http_client.fetch(fe_url, method="POST",
             body=urlencode({'public_key': key_1}),
-            headers={'X-Grouper-User': user.username})
+            headers={'X-Merou-User': user.username})
     assert resp.code == 200
 
     key = session.query(PublicKey).filter_by(user_id=user.id).scalar()
@@ -147,7 +147,7 @@ def test_remove_tag(users, http_client, base_url, session):
     fe_url = url(base_url, '/users/{}/public-key/add'.format(user.username))
     resp = yield http_client.fetch(fe_url, method="POST",
             body=urlencode({'public_key': key_2}),
-            headers={'X-Grouper-User': user.username})
+            headers={'X-Merou-User': user.username})
     assert resp.code == 200
 
     key2 = session.query(PublicKey).filter_by(public_key=key_2).scalar()
@@ -155,7 +155,7 @@ def test_remove_tag(users, http_client, base_url, session):
     fe_url = url(base_url, '/tags')
     resp = yield http_client.fetch(fe_url, method="POST",
             body=urlencode({'tagname': "tyler_was_here", "description": "Test Tag Please Ignore"}),
-            headers={'X-Grouper-User': user.username})
+            headers={'X-Merou-User': user.username})
 
     tag = PublicKeyTag.get(session, name="tyler_was_here")
 
@@ -165,7 +165,7 @@ def test_remove_tag(users, http_client, base_url, session):
     fe_url = url(base_url, '/tags')
     resp = yield http_client.fetch(fe_url, method="POST",
             body=urlencode({'tagname': "dont_tag_me_bro", "description": "Test Tag Please Ignore"}),
-            headers={'X-Grouper-User': user.username})
+            headers={'X-Merou-User': user.username})
 
     tag2 = PublicKeyTag.get(session, name="dont_tag_me_bro")
 
@@ -175,7 +175,7 @@ def test_remove_tag(users, http_client, base_url, session):
     fe_url = url(base_url, '/users/{}/public-key/{}/tag'.format(user.username, key.id))
     resp = yield http_client.fetch(fe_url, method="POST",
             body=urlencode({'tagname': "tyler_was_here"}),
-            headers={'X-Grouper-User': user.username})
+            headers={'X-Merou-User': user.username})
 
     assert resp.code == 200
     key = session.query(PublicKey).filter_by(public_key=key_1).scalar()
@@ -188,7 +188,7 @@ def test_remove_tag(users, http_client, base_url, session):
     fe_url = url(base_url, '/users/{}/public-key/{}/tag'.format(user.username, key2.id))
     resp = yield http_client.fetch(fe_url, method="POST",
             body=urlencode({'tagname': "tyler_was_here"}),
-            headers={'X-Grouper-User': user.username})
+            headers={'X-Merou-User': user.username})
 
     key = session.query(PublicKey).filter_by(public_key=key_1).scalar()
     # Fail Remove tag
@@ -197,14 +197,14 @@ def test_remove_tag(users, http_client, base_url, session):
     with pytest.raises(HTTPError):
         resp = yield http_client.fetch(fe_url, method="POST",
                 body="",
-                headers={'X-Grouper-User': "oliver@a.co"})
+                headers={'X-Merou-User': "oliver@a.co"})
 
     # Remove tag that isn't on key: should fail silently
     tag = PublicKeyTag.get(session, name="dont_tag_me_bro")
     fe_url = url(base_url, '/users/{}/public-key/{}/delete_tag/{}'.format(user.username, key.id, tag.id))
     resp = yield http_client.fetch(fe_url, method="POST",
             body="",
-            headers={'X-Grouper-User': user.username})
+            headers={'X-Merou-User': user.username})
 
     assert resp.code == 200
 
@@ -213,7 +213,7 @@ def test_remove_tag(users, http_client, base_url, session):
     fe_url = url(base_url, '/users/{}/public-key/{}/delete_tag/{}'.format(user.username, key.id, tag.id))
     resp = yield http_client.fetch(fe_url, method="POST",
             body="",
-            headers={'X-Grouper-User': user.username})
+            headers={'X-Merou-User': user.username})
 
     assert resp.code == 200
 
@@ -229,7 +229,7 @@ def test_remove_tag(users, http_client, base_url, session):
     fe_url = url(base_url, '/users/{}/public-key/{}/tag'.format(user.username, key.id))
     resp = yield http_client.fetch(fe_url, method="POST",
             body=urlencode({'tagname': "tyler_was_here"}),
-            headers={'X-Grouper-User': user.username})
+            headers={'X-Merou-User': user.username})
 
     assert resp.code == 200
     key = session.query(PublicKey).filter_by(public_key=key_1).scalar()
@@ -242,7 +242,7 @@ def test_remove_tag(users, http_client, base_url, session):
     with pytest.raises(HTTPError):
         resp = yield http_client.fetch(fe_url, method="POST",
                 body="",
-                headers={'X-Grouper-User': "oliver@a.co"})
+                headers={'X-Merou-User': "oliver@a.co"})
 
     key = session.query(PublicKey).filter_by(public_key=key_1).scalar()
     assert len(get_public_key_tags(session, key)) == 1, "The key should have exactly 1 tags"
@@ -252,7 +252,7 @@ def test_remove_tag(users, http_client, base_url, session):
     fe_url = url(base_url, '/users/{}/public-key/{}/delete_tag/{}'.format(user.username, key.id, tag.id))
     resp = yield http_client.fetch(fe_url, method="POST",
             body="",
-            headers={'X-Grouper-User': "tyleromeara@a.co"})
+            headers={'X-Merou-User': "tyleromeara@a.co"})
 
     assert resp.code == 200
 
@@ -274,7 +274,7 @@ def test_grant_permission_to_tag(users, http_client, base_url, session):
     fe_url = url(base_url, '/tags')
     resp = yield http_client.fetch(fe_url, method="POST",
             body=urlencode({'tagname': "tyler_was_here", "description": "Test Tag Please Ignore"}),
-            headers={'X-Grouper-User': user.username})
+            headers={'X-Merou-User': user.username})
 
     tag = PublicKeyTag.get(session, name="tyler_was_here")
 
@@ -283,7 +283,7 @@ def test_grant_permission_to_tag(users, http_client, base_url, session):
     fe_url = url(base_url, '/permissions/grant_tag/{}'.format(tag.name))
     resp = yield http_client.fetch(fe_url, method="POST",
             body=urlencode({'permission': TAG_EDIT, "argument": "*"}),
-            headers={'X-Grouper-User': user.username})
+            headers={'X-Merou-User': user.username})
 
     assert resp.code == 200
     tag = PublicKeyTag.get(session, name="tyler_was_here")
@@ -298,7 +298,7 @@ def test_grant_permission_to_tag(users, http_client, base_url, session):
     fe_url = url(base_url, '/permissions/grant_tag/{}'.format(tag.name))
     resp = yield http_client.fetch(fe_url, method="POST",
             body=urlencode({'permission': TAG_EDIT, "argument": "*"}),
-            headers={'X-Grouper-User': user.username})
+            headers={'X-Merou-User': user.username})
 
     assert resp.code == 200
 
@@ -317,7 +317,7 @@ def test_edit_tag(users, http_client, base_url, session):
     fe_url = url(base_url, '/tags')
     resp = yield http_client.fetch(fe_url, method="POST",
             body=urlencode({'tagname': "tyler_was_here", "description": "Test Tag Please Ignore"}),
-            headers={'X-Grouper-User': user.username})
+            headers={'X-Merou-User': user.username})
 
     tag = PublicKeyTag.get(session, name="tyler_was_here")
 
@@ -327,7 +327,7 @@ def test_edit_tag(users, http_client, base_url, session):
     fe_url = url(base_url, '/tags/{}/edit'.format(tag.id))
     resp = yield http_client.fetch(fe_url, method="POST",
             body=urlencode({"description": "Don't tag me bro"}),
-            headers={'X-Grouper-User': user.username})
+            headers={'X-Merou-User': user.username})
 
     assert resp.code == 200
 
@@ -355,7 +355,7 @@ def test_permissions(users, http_client, base_url, session):
     fe_url = url(base_url, '/tags')
     resp = yield http_client.fetch(fe_url, method="POST",
             body=urlencode({'tagname': "tyler_was_here", "description": "Test Tag Please Ignore"}),
-            headers={'X-Grouper-User': user.username})
+            headers={'X-Merou-User': user.username})
 
     tag = PublicKeyTag.get(session, name="tyler_was_here")
 
@@ -364,14 +364,14 @@ def test_permissions(users, http_client, base_url, session):
     fe_url = url(base_url, '/permissions/grant_tag/{}'.format(tag.name))
     resp = yield http_client.fetch(fe_url, method="POST",
             body=urlencode({'permission': TAG_EDIT, "argument": "prod"}),
-            headers={'X-Grouper-User': user.username})
+            headers={'X-Merou-User': user.username})
 
     user = session.query(User).filter_by(username="testuser@a.co").scalar()
     # add SSH key
     fe_url = url(base_url, '/users/{}/public-key/add'.format(user.username))
     resp = yield http_client.fetch(fe_url, method="POST",
             body=urlencode({'public_key': key_1}),
-            headers={'X-Grouper-User': user.username})
+            headers={'X-Merou-User': user.username})
 
     key = session.query(PublicKey).filter_by(user_id=user.id).scalar()
     user = session.query(User).filter_by(username="testuser@a.co").scalar()
@@ -379,7 +379,7 @@ def test_permissions(users, http_client, base_url, session):
     fe_url = url(base_url, '/users/{}/public-key/{}/tag'.format(user.username, key.id))
     resp = yield http_client.fetch(fe_url, method="POST",
             body=urlencode({'tagname': "tyler_was_here"}),
-            headers={'X-Grouper-User': user.username})
+            headers={'X-Merou-User': user.username})
     
     user = session.query(User).filter_by(username="testuser@a.co").scalar()
 
@@ -428,7 +428,7 @@ def test_revoke_permission_from_tag(users, http_client, base_url, session):
     fe_url = url(base_url, '/tags')
     resp = yield http_client.fetch(fe_url, method="POST",
             body=urlencode({'tagname': "tyler_was_here", "description": "Test Tag Please Ignore"}),
-            headers={'X-Grouper-User': user.username})
+            headers={'X-Merou-User': user.username})
 
     tag = PublicKeyTag.get(session, name="tyler_was_here")
 
@@ -437,7 +437,7 @@ def test_revoke_permission_from_tag(users, http_client, base_url, session):
     fe_url = url(base_url, '/permissions/grant_tag/{}'.format(tag.name))
     resp = yield http_client.fetch(fe_url, method="POST",
             body=urlencode({'permission': TAG_EDIT, "argument": "*"}),
-            headers={'X-Grouper-User': user.username})
+            headers={'X-Merou-User': user.username})
 
     assert resp.code == 200
     tag = PublicKeyTag.get(session, name="tyler_was_here")
@@ -450,7 +450,7 @@ def test_revoke_permission_from_tag(users, http_client, base_url, session):
     fe_url = url(base_url, '/permissions/{}/revoke_tag/{}'.format(TAG_EDIT, mapping.mapping_id))
     resp = yield http_client.fetch(fe_url, method="POST",
             body="",
-            headers={'X-Grouper-User': user.username})
+            headers={'X-Merou-User': user.username})
 
     assert resp.code == 200
     tag = PublicKeyTag.get(session, name="tyler_was_here")

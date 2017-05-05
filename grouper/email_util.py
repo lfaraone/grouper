@@ -177,7 +177,7 @@ def send_email_raw(settings, recipient_list, msg_raw):
     through the SMTP library.
 
     Args:
-        settings (Settings): Grouper Settings object for current run.
+        settings (Settings): Merou Settings object for current run.
         recipient_list (list(str)): Email addresses to send this email to.
         msg_raw (str): The message to send. This should be the output of one of the methods
             that generates a MIMEMultipart object.
@@ -201,7 +201,7 @@ def notify_edge_expiration(settings, session, edge):
     Handles email notification and audit logging.
 
     Args:
-        settings (Settings): Grouper Settings object for current run.
+        settings (Settings): Merou Settings object for current run.
         session (Session): Object for db session.
         edge (GroupEdge): The expiring edge.
     """
@@ -267,7 +267,7 @@ def notify_nonauditor_flagged(settings, session, edge):
     Handles email notification and audit logging.
 
     Args:
-        settings (Settings): Grouper Settings object for current run.
+        settings (Settings): Merou Settings object for current run.
         session (Session): Object for db session.
         edge (GroupEdge): The expiring edge.
     """

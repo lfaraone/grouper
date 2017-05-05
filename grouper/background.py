@@ -31,7 +31,7 @@ class BackgroundThread(Thread):
 
     Currently, this sends asynchronous mail messages and handles edge expiration and notification.
 
-    This class thread will exist on multiple servers in a standard Grouper production environment
+    This class thread will exist on multiple servers in a standard Merou production environment
     so we need to ensure that it's race-safe.
     """
     def __init__(self, settings, sentry_client, *args, **kwargs):
