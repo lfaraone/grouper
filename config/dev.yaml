@@ -53,6 +53,8 @@ common:
     # Type: str
     url: "http://127.0.0.1:8888"
 
+    service_brand: "Grouper"
+
 fe:
     # Number of worker processes to fork for receving requests. This option
     # is mutually exclusive with debug.

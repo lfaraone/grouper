@@ -36,14 +36,14 @@ body {
 
 <div id="email">
     <div id="heading">
-        <strong>Grouper - {% block subject %}Notification{% endblock %}</strong>
+        <strong>{{ service_brand }} - {% block subject %}Notification{% endblock %}</strong>
     </div>
     <div id="content">
         {% block content %}{% endblock %}
     </div>
     <div id="footer">
         --<br />
-        Your friendly <a href="{{url}}/">Grouper</a> robot
+        Your friendly <a href="{{url}}/">{{ service_brand }}</a> robot
     </div>
 </div>
 

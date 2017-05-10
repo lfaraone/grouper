@@ -112,6 +112,7 @@ def get_template_env(package="grouper.fe", deployment_name="",
     j_globals = {
         "cdnjs_prefix": settings["cdnjs_prefix"],
         "deployment_name": deployment_name,
+        "service_brand": settings["service_brand"],
         "ROLES": GROUP_EDGE_ROLES,
         "TYPES": OBJ_TYPES_IDX,
     }

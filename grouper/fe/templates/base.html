@@ -2,7 +2,7 @@
 <html>
     <head>
 
-        <title>{% block title %}Grouper{% endblock %}</title>
+        <title>{% block title %}{{ service_brand }}{% endblock %}</title>
 
         <link href="{{cdnjs_prefix}}/ajax/libs/twitter-bootstrap/3.1.1/css/bootstrap.min.css"
               rel="stylesheet"
@@ -30,7 +30,7 @@
                     <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
                         <span class="fa fa-gear"></span>
                     </button>
-                    <a class="navbar-brand" href="/" class="{{is_active('/')}}"><span>GROUPER.{{deployment_name}}</span></a>
+                    <a class="navbar-brand" href="/" class="{{is_active('/')}}"><span>{{ service_brand }}.{{deployment_name}}</span></a>
                 </div>
                 <div class="navbar-collapse collapse">
                     <ul class="nav navbar-nav">

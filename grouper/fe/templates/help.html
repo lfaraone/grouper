@@ -11,7 +11,7 @@
 
 {% block content %}
 
-<h3>What is Grouper?</h3>
+<h3>What is {{ service_brand }}?</h3>
 <p>This is a group membership and permission management platform. In other words, we are an
 authorization service you can use to answer such questions as: who's in what groups, and what
 permissions do they have?</p>
@@ -32,7 +32,7 @@ users or add/remove the group's permissions.)  An np-owner is like an owner but 
 inherit permissions from the group. Technically, groups are members of other groups.</p>
 
 <h3>What's the deal with permissions?</h3>
-<p>Grouper <a href="/permissions">permissions</a> are just enumerated strings. First,
+<p>{{ service_brand }} <a href="/permissions">permissions</a> are just enumerated strings. First,
 permissions are first created (added to the set of available permissions.) Then
 permissions are granted to groups as (permission, argument) pairs where an argument is an
 optional second string. Finally, users inherit the union of all (permission, argument)
@@ -51,7 +51,7 @@ which begins with no permissions.</p>
 
 <h3>Who can create users?</h3>
 <!-- TODO: update language once users can be prepopulated. -->
-<p>Users are automatically populated into Grouper as they visit the web UI.  We're working
+<p>Users are automatically populated into {{ service_brand }} as they visit the web UI.  We're working
 on a manual way to pre-populate users.</p>
 
 <h3>Who can create permissions?</h3>
