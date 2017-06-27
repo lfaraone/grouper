@@ -20,6 +20,7 @@ def sync_db_command(args):
     # Models not implicitly or explictly imported above are explicitly imported
     # here:
     from grouper.models.perf_profile import PerfProfile  # noqa
+    from grouper.models.group_metadata import GroupMetadata  # noqa
 
     db_engine = get_db_engine(get_database_url(settings))
     Model.metadata.create_all(db_engine)

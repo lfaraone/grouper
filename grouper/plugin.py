@@ -89,3 +89,7 @@ class BasePlugin(object):
             entry (models.audit_log.AuditLog): just-saved log object
         """
         pass
+
+    def register_group_metadata_type(self):
+        # type: () -> grouper.group_metadata.GroupMetadataType
+        pass
