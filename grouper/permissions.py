@@ -178,7 +178,7 @@ def disable_permission_auditing(session, permission_name, actor_user_id):
     session.commit()
 
 
-def get_groups_by_permission(session, permission):
+def get_groups_by_permission(session, permission, *extra_fields):
     """For a given permission, return the groups and associated arguments that
     have that permission.
 
@@ -193,6 +193,7 @@ def get_groups_by_permission(session, permission):
         Group.groupname,
         PermissionMap.argument,
         PermissionMap.granted_on,
+        *extra_fields
     ).filter(
         Group.id == PermissionMap.group_id,
         PermissionMap.permission_id == permission.id,
