@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% from 'macros/ui.html' import log_entry_panel, paginator, dropdown with context %}
+
+{% block heading %}
+    Permissions
+{% endblock %}
+
+{% block subheading %}
+    {{ permission.name }}
+{% endblock %}
+
+{% block headingbuttons %}
+    {% if can_change_audit_status %}
+        {% if permission.audited %}
+            <button class="btn btn-danger" data-toggle="modal" data-target="#disableModal">
+                <i class="fa fa-minus"></i> Disable Auditing
+            </button>
+        {% else %}
+            <button class="btn btn-warning" data-toggle="modal" data-target="#enableModal">
+                <i class="fa fa-plus"></i> Enable Auditing
+            </button>
+        {% endif %}
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-10 col-md-offset-1">
+<p>
+It looks like you need the <code>{{ permission.name }}</code> permission with argument <code>{{ argument }}</code>.
+We try to follow a "role-based access control" model — permissions are assigned to "roles" (groups) that roughly correspond to teams or job roles. Here's a list of groups that already have the relevant permissions; you can either request to join one of them, or request this permission for another group.
+</p>
+<h2>Direct access</h2>
+<ul>
+{% for group in direct_groups %}
+<li><a href="/groups/{{group.groupname}}">{{group.groupname}}</a> — {{ group.description }}</li>
+{% endfor %}
+</ul>
+
+<h2>Broader access</h2>
+<ul>
+{% for group in glob_groups %}
+<li><a href="/groups/{{group.groupname}}">{{group.groupname}}</a> — {{ group.description }} (<code>{{ group.argument }}</code>)</li>
+{% endfor %}
+</ul>
+
+<button class="btn btn-primary">Request to join group</button>
+<button class="btn btn-sm">None of these seem correct</button>
+
+    </div>
+</div>
+
+{% endblock %}
