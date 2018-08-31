@@ -1,10 +1,8 @@
 from grouper.fe.util import GrouperHandler
-from grouper.util import matches_glob 
-from grouper.models.permission import Permission
 from grouper.models.group import Group
-from grouper.permissions import get_groups_by_permission, get_log_entries_by_permission
-from grouper.user_permissions import user_is_permission_admin
-
+from grouper.models.permission import Permission
+from grouper.permissions import get_groups_by_permission 
+from grouper.util import matches_glob
 
 class PermissionSolver(GrouperHandler):
     def get(self):

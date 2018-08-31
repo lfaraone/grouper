@@ -27,8 +27,8 @@ from grouper.fe.handlers.not_found import NotFound
 from grouper.fe.handlers.perf_profile import PerfProfile
 from grouper.fe.handlers.permission_disable_auditing import PermissionDisableAuditing
 from grouper.fe.handlers.permission_enable_auditing import PermissionEnableAuditing
-from grouper.fe.handlers.permission_view import PermissionView
 from grouper.fe.handlers.permission_solver import PermissionSolver
+from grouper.fe.handlers.permission_view import PermissionView
 from grouper.fe.handlers.permissions_create import PermissionsCreate
 from grouper.fe.handlers.permissions_grant import PermissionsGrant
 from grouper.fe.handlers.permissions_grant_tag import PermissionsGrantTag
